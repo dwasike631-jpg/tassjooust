@@ -1,0 +1,1125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>TASSJOOUST Club — Portal (Cleaned)</title>
+<meta name="description" content="TASSJOOUST Club portal — cleaned version: gallery removed, member restrictions enforced" />
+<style>
+  :root{--brown:#4B2E05;--brown-dark:#3b2303;--orange:#F28C28;--muted:rgba(46,46,46,0.7);--card-shadow:0 10px 30px rgba(75,46,5,0.08);--radius:12px;--maxw:1150px;--ease:240ms}
+  *{box-sizing:border-box}html,body{height:100%}
+  body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;background: linear-gradient(120deg,var(--brown),var(--orange));animation: gradientShift 12s ease-in-out infinite;display:flex;justify-content:center;align-items:flex-start;padding:18px;color:#111}
+  @keyframes gradientShift{0%{background:linear-gradient(120deg,#4B2E05,#F28C28)}50%{background:linear-gradient(120deg,#6a3f1a,#ff9d34)}100%{background:linear-gradient(120deg,#4B2E05,#F28C28)}}
+  .app{width:100%;max-width:var(--maxw);background:linear-gradient(180deg, rgba(245, 168, 2, 0.98), rgba(245, 167, 23, 0.95));border-radius:16px;box-shadow:var(--card-shadow);overflow:hidden;border:1px solid rgba(75,46,5,0.06)}
+  .inner{padding:20px;display:flex;flex-direction:column;gap:18px}
+  header{display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .brand{display:flex;gap:12px;align-items:center}
+  .logo-small{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;background:linear-gradient(135deg,var(--brown),var(--orange));font-weight:800;overflow:hidden}
+  .logo-small img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
+  /* Dashboard floating logo (top-center) */
+  #dashLogo{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:2;display:none}
+  h1{margin:0;font-size:1.05rem;color:var(--brown-dark)}
+  .muted{color:var(--muted);font-size:0.92rem}
+  .top-actions{display:flex;gap:8px;align-items:center}
+  .btn{border:0;padding:9px 14px;border-radius:10px;background:linear-gradient(90deg,var(--orange),#ffb85b);color:#fff;font-weight:700;cursor:pointer;box-shadow:0 8px 18px rgba(242,140,40,0.15);transition:transform var(--ease), background 260ms}
+  .btn:hover{transform:translateY(-2px);background:linear-gradient(90deg,var(--brown-dark),var(--brown))}
+  .btn.ghost{background:transparent;color:var(--brown);border:1px solid rgba(75,46,5,0.06);box-shadow:none}
+  .btn.small{padding:7px 10px;font-size:0.92rem;border-radius:8px}
+  .btn.warn{background:#e66;color:#fff}
+  /* About button (Club's Info): 3D oval */
+  .btn.about{border-radius:999px;background:linear-gradient(180deg,#ffb769,#f39a33);box-shadow:0 10px 24px rgba(242,140,40,0.35);transition:transform var(--ease),box-shadow var(--ease),background 260ms}
+  .btn.about:hover,.btn.about:focus-visible{transform:translateY(-6px);box-shadow:0 16px 36px rgba(242,140,40,0.45)}
+  .btn.about:active{transform:translateY(-2px);box-shadow:0 8px 18px rgba(242,140,40,0.35)}
+  /* Payments button: 3D oval */
+  .btn.payments{border-radius:999px;background:linear-gradient(180deg,#ffb769,#f39a33);box-shadow:0 10px 24px rgba(242,140,40,0.35);transition:transform var(--ease),box-shadow var(--ease),background 260ms}
+  .btn.payments:hover,.btn.payments:focus-visible{transform:translateY(-6px);box-shadow:0 16px 36px rgba(242,140,40,0.45)}
+  .btn.payments:active{transform:translateY(-2px);box-shadow:0 8px 18px rgba(242,140,40,0.35)}
+  /* Contact button: 3D oval */
+  .btn.contact{border-radius:999px;background:linear-gradient(180deg,#ffb769,#f39a33);box-shadow:0 10px 24px rgba(242,140,40,0.35);transition:transform var(--ease),box-shadow var(--ease),background 260ms}
+  .btn.contact:hover,.btn.contact:focus-visible{transform:translateY(-6px);box-shadow:0 16px 36px rgba(242,140,40,0.45)}
+  .btn.contact:active{transform:translateY(-2px);box-shadow:0 8px 18px rgba(242,140,40,0.35)}
+  /* Admin action buttons: 3D variants */
+  .btn.approve3d{border-radius:999px;background:linear-gradient(180deg,#34d058,#28a745);box-shadow:0 10px 24px rgba(40,167,69,0.35);transition:transform var(--ease),box-shadow var(--ease),background 260ms}
+  .btn.approve3d:hover,.btn.approve3d:focus-visible{transform:translateY(-6px);box-shadow:0 16px 36px rgba(40,167,69,0.45)}
+  .btn.approve3d:active{transform:translateY(-2px);box-shadow:0 8px 18px rgba(40,167,69,0.35)}
+  .btn.decline3d{border-radius:999px;background:linear-gradient(180deg,#3a3a3a,#000);box-shadow:0 10px 24px rgba(0,0,0,0.35);transition:transform var(--ease),box-shadow var(--ease),background 260ms;color:#fff}
+  .btn.decline3d:hover,.btn.decline3d:focus-visible{transform:translateY(-6px);box-shadow:0 16px 36px rgba(0,0,0,0.5)}
+  .btn.decline3d:active{transform:translateY(-2px);box-shadow:0 8px 18px rgba(0,0,0,0.35)}
+  .btn.delete3d{border-radius:999px;background:linear-gradient(180deg,#ff6b6b,#e63946);box-shadow:0 10px 24px rgba(230,57,70,0.35);transition:transform var(--ease),box-shadow var(--ease),background 260ms}
+  .btn.delete3d:hover,.btn.delete3d:focus-visible{transform:translateY(-6px);box-shadow:0 16px 36px rgba(230,57,70,0.5)}
+  .btn.delete3d:active{transform:translateY(-2px);box-shadow:0 8px 18px rgba(230,57,70,0.35)}
+  /* Sign-in buttons: 3D oval styling */
+  #signinPanel .btn{border-radius:999px;background:linear-gradient(180deg,#ffb769,#f39a33);box-shadow:0 10px 24px rgba(242,140,40,0.35);transform:translateY(0);transition:transform var(--ease),box-shadow var(--ease),background 260ms}
+  #signinPanel .btn:hover,#signinPanel .btn:focus-visible{transform:translateY(-6px);box-shadow:0 16px 36px rgba(242,140,40,0.45)}
+  #signinPanel .btn:active{transform:translateY(-2px);box-shadow:0 8px 18px rgba(242,140,40,0.35)}
+  #signinPanel .btn.ghost{background:linear-gradient(180deg,#ffffff,#fff7ef);color:var(--brown-dark);border:1px solid rgba(75,46,5,0.12);box-shadow:0 8px 20px rgba(75,46,5,0.12)}
+  #signinPanel .btn.ghost:hover,#signinPanel .btn.ghost:focus-visible{transform:translateY(-6px);box-shadow:0 14px 28px rgba(75,46,5,0.18)}
+  #signinPanel .btn.ghost:active{transform:translateY(-2px);box-shadow:0 6px 14px rgba(75,46,5,0.14)}
+  main.layout{display:grid;grid-template-columns:1fr 420px;gap:18px;align-items:start}
+  @media(max-width:980px){ main.layout{grid-template-columns:1fr} .logo-small{width:56px;height:56px} }
+  .card{background:linear-gradient(180deg, rgba(241, 131, 10, 0.96), rgba(250,245,240,0.9));padding:16px;border-radius:12px;border:1px solid rgba(75,46,5,0.04)}
+  .lead{color:var(--muted);margin:0 0 10px 0}
+  .tabs{display:flex;gap:8px;margin-bottom:12px}
+  .tab{padding:8px 12px;border-radius:999px;cursor:pointer;border:1px solid rgba(75,46,5,0.04);background:transparent}
+  .tab.active{background:linear-gradient(90deg,var(--orange),#ffb85b);color:#fff;font-weight:800}
+  form{display:flex;flex-direction:column;gap:12px}
+  .row{display:flex;gap:10px}
+  .col{flex:1}
+  label{font-size:0.9rem;color:#222;margin-bottom:6px}
+  input[type="text"],input[type="email"],input[type="tel"],input[type="password"],select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(75,46,5,0.08);outline:none;background:#fff;font-size:0.95rem}
+  input:focus,select:focus,textarea:focus{box-shadow:0 0 0 6px rgba(242,140,40,0.08);border-color:rgba(75,46,5,0.14)}
+  textarea{min-height:100px;resize:vertical}
+  .muted-help{font-size:0.88rem;color:var(--muted)}
+  .radios{display:flex;gap:8px;align-items:center}
+  .radio{padding:8px 10px;border-radius:999px;border:1px solid rgba(75,46,5,0.06);display:inline-flex;align-items:center;gap:8px;background:linear-gradient(180deg,rgba(242,140,40,0.03),transparent)}
+  .dash-card{display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .chat-box{background:linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.85));padding:12px;border-radius:10px;height:260px;overflow:auto;display:flex;flex-direction:column;gap:10px}
+  .bubble{display:inline-block;padding:10px 12px;border-radius:14px;max-width:78%;word-wrap:break-word}
+  .bubble.me{background:linear-gradient(90deg,var(--orange),#ffc77a);color:var(--brown);align-self:flex-end;margin-left:auto}
+  .bubble.admin{background:rgba(241, 199, 8, 0.06);color:#010c0c;align-self:flex-start}
+  .bubble.patron{background:linear-gradient(90deg,#acf307,var(--orange));color:var(--brown);align-self:flex-start}
+  .bubble.selected{outline:2px solid rgba(0,0,0,0.25)}
+  /* Chat actions floating menu */
+  .chat-actions{position:fixed;z-index:1300;background:#fff;border:1px solid rgba(0,0,0,0.1);box-shadow:0 8px 24px rgba(0,0,0,0.15);border-radius:10px;padding:6px;display:none;min-width:220px}
+  .chat-actions button{display:block;width:100%;text-align:left;background:#fff;border:0;padding:8px 10px;border-radius:8px;color:#222;cursor:pointer}
+  .chat-actions button:hover{background:#f8f8f8}
+  .typing{font-weight:700;color:var(--orange);margin-top:6px;font-size:0.92rem}
+  table{width:100%;border-collapse:collapse}
+  th,td{padding:8px;border-bottom:1px solid rgba(75,46,5,0.04);font-size:0.92rem;text-align:left}
+  th{background:rgba(75,46,5,0.02)}
+  .confirm{display:none;margin-top:12px;border-radius:10px;padding:12px;background:#fff;border-left:6px solid var(--orange);box-shadow:0 8px 20px rgba(75,46,5,0.04)}
+  .confirm.show{display:block;animation:pop .22s ease-out}
+  @keyframes pop{from{transform:translateY(6px);opacity:0}to{transform:translateY(0);opacity:1}}
+  .chart-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;padding:8px}
+  canvas.bar-chart{width:100%;height:160px;border-radius:8px;background:transparent}
+  canvas.line-chart{width:100%;height:160px;border-radius:8px;background:transparent}
+  .members-list{max-height:260px;overflow:auto;border-radius:8px;border:1px solid rgba(75,46,5,0.04);padding:8px;background:#fff}
+  .toast{position:fixed;right:18px;bottom:18px;background:var(--brown-dark);color:#fff;padding:10px 14px;border-radius:10px;box-shadow:0 8px 24px rgba(75,46,5,0.2);z-index:1200;opacity:0;transform:translateY(8px);transition:all 220ms}
+  .toast.success{background:#1f9d39}
+  .toast.error{background:#d9363e}
+  .toast.show{opacity:1;transform:translateY(0)}
+  /* Member status banner */
+  .status-banner{margin:6px auto 0 auto;text-align:center;font-weight:800}
+  .status-banner.ok{color:#1f9d39}
+  .status-banner.pending{color:#000}
+  .status-banner.warn{color:#d9363e}
+  /* Inline status for field validation */
+  .inline-status{font-weight:800;font-size:0.9rem}
+  .inline-status.good{color:#1f9d39}
+  .inline-status.bad{color:#d9363e}
+  /* Admin payments chips */
+  .status-chip{display:inline-block;padding:2px 8px;border-radius:999px;font-weight:800;font-size:0.84rem}
+  .chip-yes{color:#1f9d39;background:rgba(31,157,57,0.12);border:1px solid rgba(31,157,57,0.2)}
+  .chip-no{color:#d9363e;background:rgba(217,54,62,0.12);border:1px solid rgba(217,54,62,0.2)}
+  .chip-valid{color:#8a4b00;background:linear-gradient(90deg, rgba(255,193,7,0.14), rgba(242,140,40,0.14));border:1px solid rgba(242,140,40,0.28)}
+  .chip-invalid{color:#6b4b3a;background:rgba(139,69,19,0.12);border:1px solid rgba(139,69,19,0.22)}
+  /* Non-editable message cell */
+  .msg-noedit{user-select:none;cursor:not-allowed}
+  /* Locked parser textarea */
+  .parser-locked{background:#f9f1e7; cursor:not-allowed}
+  /* Presence chip */
+  .presence-chip{display:inline-block;padding:2px 10px;border-radius:999px;font-weight:800;font-size:0.84rem}
+  .presence-online{color:#fff;background:#1e90ff}
+  .presence-offline{color:#6b4b3a;background:rgba(139,69,19,0.12);border:1px solid rgba(139,69,19,0.22)}
+  footer{display:flex;justify-content:space-between;align-items:center;padding-top:8px;color:var(--muted);font-size:0.9rem}
+  .dash-footer{position:fixed;left:18px;bottom:12px;color:var(--brown-dark);font-weight:700;background:transparent}
+  :focus-visible{box-shadow:0 0 0 6px rgba(242,140,40,0.12);border-radius:8px;outline:none}
+  /* Circular loading ring for the entire Home (ultra-thin, behind content) */
+  #homeRing{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:98vmin;height:98vmin;border-radius:50%;pointer-events:none;z-index:0}
+  #homeRing::before,#homeRing::after{content:"";position:absolute;inset:0;border-radius:50%}
+  /* Glow */
+  #homeRing::before{background:radial-gradient(closest-side, rgba(242,140,40,0.18), rgba(75,46,5,0.12) 60%, rgba(0,0,0,0) 72%);filter:blur(6px);}
+  /* Spinner */
+  #homeRing::after{
+    background:conic-gradient(from 0deg, var(--brown-dark), var(--orange), var(--brown-dark));
+    -webkit-mask:radial-gradient(farthest-side, transparent calc(50% - 1.5px), #000 calc(50% - 0.5px));
+            mask:radial-gradient(farthest-side, transparent calc(50% - 1.5px), #000 calc(50% - 0.5px));
+    animation:homeSpin 2.2s linear infinite;
+  }
+  /* Ensure app content is above the ring */
+  .app{position:relative;z-index:1}
+  @keyframes homeSpin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+  <!-- loader -->
+  <div id="mainLoader" class="loader" role="status" aria-live="polite" style="position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;color:#fff;background:linear-gradient(135deg,#4B2E05,#F28C28)">
+    <div style="font-weight:800;color:#fff;margin-top:8px">Loading Please wait…</div>
+  </div>
+
+  <!-- Global rotating ring for Home -->
+  <div id="homeRing" aria-hidden="true"></div>
+
+  <div id="app" class="app" style="display:none" role="application" aria-labelledby="appTitle">
+    <div id="dashLogo" class="logo-small"><img src="logo.png" alt="TASSJOOUST logo"></div>
+    <div class="inner">
+      <header id="mainHeader">
+        <div class="brand">
+          <div class="logo-small" aria-hidden="true"><img src="logo.png" alt="TASSJOOUST logo"></div>
+          <div>
+            <h1 id="appTitle"><strong>TASSJOOUST</strong></h1>
+            <div class="muted">Registration and Renewal Portal</div>
+          </div>
+        </div>
+        <div class="top-actions" role="navigation" aria-label="top actions">
+          <div class="muted">Portal <strong>select after sign in </strong></div>
+          <button class="btn small" onclick="scrollToHome()">Home</button>
+          <button id="navMember" class="btn ghost small">Member Dashboard</button>
+          <button id="navAdmin" class="btn ghost small">Admin Dashboard</button>
+          <button id="navPatron" class="btn ghost small">Patron Dashboard</button>
+        </div>
+      </header>
+
+      <!-- HOME + Auth -->
+      <main id="homeView" class="card">
+        <div style="display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap">
+          <div style="flex:1;min-width:260px">
+            <h2><u>WELCOME TO TASSJOOUST CLUB</u></h2>
+
+            <div class="card auth-card" style="margin-top:12px;position:relative">
+              <div class="tabs" role="tablist" aria-label="Auth tabs">
+                <button id="tabRegister" class="tab active" role="tab" aria-selected="true">Register</button>
+                <button id="tabSignIn" class="tab" role="tab">Sign In</button>
+              </div>
+
+              <!-- Register -->
+              <div id="registerPanel">
+                <button id="registerRevealBtn" class="btn" type="button" aria-expanded="false" aria-controls="registerDetails">Register now</button>
+                <div id="registerDetails" style="display:none">
+                <form id="registerForm" novalidate>
+                  <div class="row">
+                    <div class="col">
+                      <label for="rName">Full name</label>
+                      <input id="rName" name="fullName" type="text" required />
+                    </div>
+                    <div class="col">
+                      <label for="rReg">Registration No</label>
+                      <div style="display:flex;gap:8px;align-items:center">
+                        <input id="rReg" name="regNo" type="text" required />
+                        <span id="rRegStatus" class="inline-status" aria-live="polite"></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col">
+                      <label for="rEmail">Email</label>
+                      <input id="rEmail" name="email" type="email" required />
+                    </div>
+                    <div class="col">
+                      <label for="rPhone">Phone</label>
+                      <input id="rPhone" name="phone" type="tel" placeholder="+2547..." required />
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col">
+                      <label for="rDept">Department</label>
+                     
+                       <select id="rDept" name="department"><option value="">Select Department</option>
+                        <option>SBPMAS</option>
+                      </select>
+                    </div>
+                    <div class="col">
+                      <label for="rYear">Year of study</label>
+                      <select id="rYear" name="year">
+                        <option value="">Select year</option>
+                        <option>1st Year</option><option>2nd Year</option><option>3rd Year</option><option>4th Year</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label for="rPass">Password (min 8, 1 uppercase, 1 number, 1 special)</label>
+                    <div style="display:flex;gap:6px;align-items:center">
+                      <input id="rPass" type="password" required />
+                      <button id="rPassToggle" type="button" class="btn small ghost" title="Show/Hide password">Show</button>
+                    </div>
+                  </div>
+
+                 
+
+                  <div style="display:flex;gap:8px;align-items:center">
+                    <button type="submit" class="btn">Create account</button>
+                    <button id="registerClearBtn" type="button" class="btn ghost">Clear</button>
+                  </div>
+                </form>
+                </div>
+                <div id="registerMsg" style="margin-top:10px"></div>
+              </div>
+
+              <!-- Sign in -->
+              <div id="signinPanel" style="display:none">
+                <form id="signinForm" novalidate>
+                  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+                    <input id="sReg" placeholder="Registration number or username" style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(75,46,5,0.08)">
+                    <div style="display:flex;gap:6px;align-items:center;flex:1">
+                      <input id="sPass" type="password" placeholder="Password" style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(75,46,5,0.08)">
+                      <button id="sPassToggle" type="button" class="btn small ghost" title="Show/Hide password">Show</button>
+                    </div>
+                  </div>
+                  <div style="display:flex;gap:8px;margin-top:8px">
+                    <button type="button" class="btn" onclick="memberSignIn()">Sign In</button>
+                    <button type="button" class="btn ghost" onclick="adminSignInPrompt()">Admin sign in</button>
+                    <button type="button" class="btn ghost" onclick="patronSignInPrompt()">Patron sign in</button>
+                    <button type="button" class="btn ghost" onclick="memberForgot()">Forgot Password?</button>
+                  </div>
+                </form>
+                <div id="signinMsg" style="margin-top:10px"></div>
+              </div>
+
+            </div>
+          </div>
+
+          <aside style="width:360px;min-width:260px;display:flex;flex-direction:column;gap:12px">
+            <div class="card">
+              <h3><b><i><u>Club's Info</u></i></b></h3>
+              <button id="aboutBtn" class="btn about" type="button" aria-expanded="false" aria-controls="aboutContent">About</button>
+              <div id="aboutContent" style="display:none">
+                <p class="lead"><b>TASSJOOUST is a student-led club for Actuarial Science students focused on professional growth, mentorship, and community. We organize workshops, networking events, and support members through skill-building opportunities.</b></p>
+                <div class="muted">Open to register and renew  students ensuring  unity and team work.</div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3><b><i>Payments</i></b></h3>
+              <button id="paymentsBtn" class="btn payments" type="button" aria-expanded="false" aria-controls="paymentsContent">View Fees</button>
+              <div id="paymentsContent" style="display:none;margin-top:8px">
+                <div style="display:flex;justify-content:space-between;padding:8px;border-radius:8px;border:1px dashed rgba(75,46,5,0.04);margin-bottom:8px">
+                  <div>Registration Fee</div><div><strong>Ksh 100</strong></div>
+                </div>
+                <div style="display:flex;justify-content:space-between;padding:8px;border-radius:8px;border:1px dashed rgba(75,46,5,0.04)">
+                  <div>Renewal Fee</div><div><strong>Ksh 50</strong></div>
+                </div>
+              </div>
+            </div>
+            <button id="contactBtn" class="btn contact" type="button" aria-expanded="false" aria-controls="contactContent" title="Email us at tassjooust@ejooust.ac.ke">Contact us</button>
+            <div id="contactContent" class="muted" style="display:none;margin-top:8px">
+              For help contact:
+              <strong>
+                <a href="tel:+254737292938">+254737292938</a>
+                /
+                <a href="tel:+254113420696">+254113420696</a>
+              </strong>
+              or mail us at:
+              <strong>
+                <a href="mailto:tassjooust@ejooust.ac.ke?subject=TASS%20JOOUST%20Support">tassjooust@ejooust.ac.ke</a>
+              </strong>
+              <span style="margin-left:6px">
+                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=tassjooust@ejooust.ac.ke&su=TASS%20JOOUST%20Support" target="_blank" rel="noopener noreferrer">Open in Gmail</a>
+              </span>
+            </div>
+           
+          </aside>
+        </div>
+      </main>
+
+      <!-- DASHBOARDS -->
+      <section id="dashboards" style="display:none">
+        <!-- Member -->
+        <div id="memberDashboard" class="card" style="display:none;position:relative">
+          <div class="dash-card">
+            <div style="display:flex;gap:12px;align-items:center">
+              <div id="memberGreeting" style="font-weight:800">Hi! Member</div>
+              <div class="muted" id="memberTime"></div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:center">
+              <div style="display:flex;gap:8px">
+                <button class="btn" onclick="logout()">Logout</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="memberStatus" class="status-banner" aria-live="polite"></div>
+  <div id="memberPresence" style="position:absolute;top:10px;right:10px"></div>
+
+          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+            <div style="flex:1;min-width:320px">
+              <div class="card">
+                <h3><strong>My profile</strong></h3>
+                <div class="muted-help">Registration: <strong id="memberReg"></strong></div>
+                <div class="muted-help">Email: <strong id="memberEmail"></strong></div>
+                <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+                  <button class="btn" onclick="openMpesa('Registration',100)">Register (Ksh 100)</button>
+                  <button class="btn" onclick="openMpesa('Renewal',50)">Renew (Ksh 50)</button>
+                  <button class="btn ghost" onclick="openChangePassword()">Change password</button>
+                </div>
+              </div>
+
+              <div class="card" style="margin-top:12px">
+                <h3><strong>Message here</strong></h3>
+                <div id="chatMemberBox" class="chat-box" aria-live="polite"></div>
+                <div style="display:flex;gap:8px;margin-top:8px;align-items:center;flex-wrap:wrap">
+                  <input id="chatMemberIn" placeholder="Type a message..." style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(75,46,5,0.08)" oninput="typingSignal('member')" onkeypress="if(event.key==='Enter') sendChat('member')">
+                  <input id="chatMemberFile" type="file" accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt" style="display:none" onchange="onChatFileSelected('member')">
+                  <button class="btn small" onclick="triggerChatFile('member')">Attach</button>
+                  <button class="btn small" onclick="sendChat('member')">Send</button>
+                </div>
+                <div id="typingMember" class="typing" aria-hidden="true"></div>
+              </div>
+            </div>
+
+            <aside style="width:420px;min-width:260px;display:flex;flex-direction:column;gap:12px">
+              <div class="card chart-wrap">
+                <h3 style="margin:0">Club statistics</h3>
+                <canvas id="memberChart" class="bar-chart"></canvas>
+                <canvas id="memberLineChart" class="line-chart" style="margin-top:8px"></canvas>
+                <div class="muted">Bar: Approved / Pending / Declined / Not Paid. Line: Joined / Registered / Renewed / Not Paid (last 14 days)</div>
+              </div>
+
+              <div class="card">
+                <h3><strong><u>Members Joined</u></strong></h3>
+                <div id="memberQuick" class="members-list"></div>
+              </div>
+            </aside>
+          </div>
+        </div>
+
+        <!-- ADMIN -->
+        <div id="adminDashboard" class="card" style="display:none">
+          <div class="dash-card">
+            <div style="display:flex;gap:12px;align-items:center">
+                <div id="adminGreeting" style="font-weight:800">Hi! Finance Director</div>
+                <div class="muted" id="adminTime"></div>
+              </div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:center">
+              <div style="display:flex;gap:8px">
+                <button class="btn" onclick="logout()">Logout</button>
+              </div>
+            </div>
+
+          <div style="margin-top:12px">
+            <div style="display:flex;gap:8px;margin-bottom:12px">
+              <button class="btn ghost small" onclick="switchAdminTab('members')">Members</button>
+              <button class="btn ghost small" onclick="switchAdminTab('payments')">Pending Payments</button>
+              <button class="btn ghost small" onclick="switchAdminTab('parser')">M-Pesa Parser</button>
+            </div>
+
+            <!-- Members -->
+            <div id="adminTabMembers" class="card">
+              <h3><i><b><u><strong>ADD Members</strong></u></b></i></h3>
+              <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap">
+                <input id="adminAddReg" placeholder="Reg number" style="padding:8px;border-radius:8px;border:1px solid rgba(75,46,5,0.08);min-width:120px">
+                <input id="adminAddName" placeholder="Full name" style="padding:8px;border-radius:8px;border:1px solid rgba(75,46,5,0.08);min-width:160px">
+                <input id="adminAddEmail" placeholder="Email" style="padding:8px;border-radius:8px;border:1px solid rgba(75,46,5,0.08);min-width:180px">
+                <input id="adminAddPass" type="password" placeholder="Password" style="padding:8px;border-radius:8px;border:1px solid rgba(75,46,5,0.08);min-width:140px">
+                <button class="btn" onclick="adminAddMember()">Add member</button>
+                <button class="btn ghost" onclick="exportCSV()">Export CSV</button>
+              </div>
+              <div style="overflow:auto;max-height:320px">
+                <table id="adminMembersTable"></table>
+              </div>
+            </div>
+
+            <!-- Payments -->
+            <div id="adminTabPayments" class="card" style="display:none;margin-top:12px">
+              <h3>Pending Payments</h3>
+              <div style="overflow:auto;max-height:380px">
+                <table id="adminPaymentsTable"></table>
+              </div>
+            </div>
+
+            <!-- Parser -->
+            <div id="adminTabParser" class="card" style="display:none;margin-top:12px">
+              <h3>M-Pesa Message Parser</h3>
+              <p class="muted">Paste the raw M-Pesa SMS text and click Parse. The parser will attempt to extract <strong>amount, phone, name, and date</strong> and will try to match the phone or name to an existing member.</p>
+              <textarea id="mpesaRaw" placeholder="Paste M-Pesa SMS here..." style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(75,46,5,0.08)"></textarea>
+              <div style="display:flex;gap:8px;margin-top:8px;justify-content:flex-end">
+                <button class="btn" onclick="parseMpesaMessage()">Parse</button>
+                <button class="btn ghost" onclick="clearMpesaParser()">Clear</button>
+              </div>
+
+              <div id="mpesaParseResult" style="margin-top:12px"></div>
+            </div>
+
+            <div class="card" style="margin-top:12px">
+              <h3><i><b><strong>Message here</strong></b></i></h3>
+              <div id="chatAdminBox" class="chat-box" aria-live="polite"></div>
+              <div style="display:flex;gap:8px;margin-top:8px;align-items:center;flex-wrap:wrap">
+                <input id="chatAdminIn" placeholder="Type a message..." style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(75,46,5,0.08)" oninput="typingSignal('admin')" onkeypress="if(event.key==='Enter') sendChat('admin')">
+                <input id="chatAdminFile" type="file" accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt" style="display:none" onchange="onChatFileSelected('admin')">
+                <button class="btn small" onclick="triggerChatFile('admin')">Attach</button>
+                <button class="btn small" onclick="sendChat('admin')">Send</button>
+              </div>
+              <div id="typingAdmin" class="typing" aria-hidden="true"></div>
+            </div>
+
+            <div class="card chart-wrap" style="margin-top:12px">
+              <h3 style="margin:0">Club statistics</h3>
+              <canvas id="adminChart" class="bar-chart"></canvas>
+              <canvas id="adminLineChart" class="line-chart" style="margin-top:8px"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- PATRON -->
+        <div id="patronDashboard" class="card" style="display:none">
+          <div class="dash-card">
+              <div>
+                <div id="patronGreeting" style="font-weight:800">Hi! Patron</div>
+                <div class="muted" id="patronTime"></div>
+              </div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:center">
+              <div style="display:flex;gap:8px">
+                <button class="btn" onclick="logout()">Logout</button>
+              </div>
+            </div>
+
+          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+            <div style="flex:1;min-width:320px">
+              <div class="card">
+                <h3><i><U><b><strong>Members Confirmation</strong></b></U></i></h3>
+                <div style="overflow:auto;max-height:340px">
+                  <table id="patronMembersTable"></table>
+                </div>
+              </div>
+
+              <div class="card" style="margin-top:12px">
+                <h3><i><b>Message here</b></i></h3>
+                <div id="chatPatronBox" class="chat-box" aria-live="polite"></div>
+                <div style="display:flex;gap:8px;margin-top:8px;align-items:center;flex-wrap:wrap">
+                  <input id="chatPatronIn" placeholder="Type a message..." style="flex:1;padding:10px;border-radius:8px;border:1px solid rgba(75,46,5,0.08)" oninput="typingSignal('patron')" onkeypress="if(event.key==='Enter') sendChat('patron')">
+                  <input id="chatPatronFile" type="file" accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt" style="display:none" onchange="onChatFileSelected('patron')">
+                  <button class="btn small" onclick="triggerChatFile('patron')">Attach</button>
+                  <button class="btn small" onclick="sendChat('patron')">Send</button>
+                </div>
+                <div id="typingPatron" class="typing" aria-hidden="true"></div>
+              </div>
+            </div>
+
+            <aside style="width:360px;min-width:260px;display:flex;flex-direction:column;gap:12px">
+              <div class="card chart-wrap">
+                <h3 style="margin:0">Club statistics</h3>
+                <canvas id="patronChart" class="bar-chart"></canvas>
+                <canvas id="patronLineChart" class="line-chart" style="margin-top:8px"></canvas>
+              </div>
+
+              <div class="card">
+                <h3><b><i><u><strong>All Members</strong></u></i></b></h3>
+                <div id="patronQuick" class="members-list"></div>
+              </div>
+            </aside>
+          </div>
+        </div>
+
+      </section>
+
+      <div id="dashboardFooter" class="dash-footer" style="display:none">Risk it and be an actuary</div>
+
+      <footer id="mainFooter">
+        <div>© 2025 <strong>Risk it and be an actuary</strong></div>
+        <a href="https://www.linkedin.com/company/tass-jooust/posts" target="_blank" rel="noopener noreferrer" title="Visit our here for more information" style="display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:#0A66C2;border:1px solid #0A66C2;color:#fff;text-decoration:none;font-weight:700;box-shadow:0 4px 10px rgba(10,102,194,0.28)">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" style="fill:currentColor">
+            <path d="M19 0H5C2.79 0 1 1.79 1 4v16c0 2.21 1.79 4 4 4h14c2.21 0 4-1.79 4-4V4c0-2.21-1.79-4-4-4zM7.03 20H4.5V9.5h2.53V20zM5.76 8.16c-.97 0-1.76-.81-1.76-1.8s.79-1.8 1.76-1.8 1.76.81 1.76 1.8-.79 1.8-1.76 1.8zM20 20h-2.53v-4.9c0-1.17-.02-2.67-1.63-2.67-1.63 0-1.88 1.27-1.88 2.58V20h-2.53V9.5h2.43v1.3h.03c.34-.65 1.34-1.54 2.76-1.54 2.95 0 3.35 1.94 3.35 4.46V20z"/>
+          </svg>
+          <span>LinkedIn</span>
+        </a>
+        <div class="muted"><b><i>Designed for the Actuarial Science Students</i></b></div>
+      </footer>
+
+  
+
+  <!-- M-Pesa modal (member) -->
+  <div id="mpesaModal" class="modal hidden" role="dialog" aria-hidden="true" style="display:none">
+    <div class="modal-content" style="background:linear-gradient(180deg,#fff,#fffaf5);padding:18px;border-radius:12px;width:94%;max-width:760px;box-shadow:0 12px 40px rgba(0,0,0,0.25)">
+      <h3 id="mpesaTitle">Paste M-Pesa message</h3>
+      <p class="muted">Copy the full SMS confirmation and paste it here for verification.</p>
+      <textarea id="mpesaText" style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(75,46,5,0.08)"></textarea>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px">
+        <button class="btn" onclick="submitMpesa()">Send</button>
+        <button class="btn ghost" onclick="closeMpesaModal()">Cancel</button>
+      </div>
+      <div id="mpesaStatus" style="margin-top:8px"></div>
+    </div>
+  </div>
+
+  <!-- Change PW modal -->
+  <div id="pwModal" class="modal hidden" role="dialog" aria-hidden="true" style="display:none">
+    <div class="modal-content" style="background:linear-gradient(180deg,#fff,#fffaf5);padding:18px;border-radius:12px;width:94%;max-width:760px;box-shadow:0 12px 40px rgba(0,0,0,0.25)">
+      <h3>Change Password</h3>
+      <label class="muted">Current password</label>
+      <input id="oldPW" type="password" style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(75,46,5,0.08)">
+      <label class="muted" style="margin-top:8px">New password</label>
+      <input id="newPW" type="password" style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(75,46,5,0.08)">
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px">
+        <button class="btn" onclick="confirmChangePassword()">Confirm</button>
+        <button class="btn ghost" onclick="closePwModal()">Cancel</button>
+      </div>
+      <div id="pwStatus" style="margin-top:8px"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" aria-hidden="true"></div>
+
+  <!-- Floating chat actions menu -->
+  <div id="chatActions" class="chat-actions" role="menu" aria-hidden="true">
+    <button data-act="forward">Forward</button>
+    <button data-act="copy">Copy</button>
+    <button data-act="share">Share</button>
+    <button data-act="info">Information</button>
+    <button data-act="delete" style="color:#d9363e">Delete</button>
+  </div>
+
+  <!-- Bottom-centered LinkedIn link -->
+  <div id="bottomCenterLink" style="position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:1100;">
+    <a href="https://www.linkedin.com/company/tass-jooust/posts" target="_blank" rel="noopener noreferrer" title="Visit our here for more information" style="display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:#0A66C2;border:1px solid #0A66C2;color:#fff;text-decoration:none;font-weight:700;box-shadow:0 6px 16px rgba(10,102,194,0.35)">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" style="fill:currentColor">
+        <path d="M19 0H5C2.79 0 1 1.79 1 4v16c0 2.21 1.79 4 4 4h14c2.21 0 4-1.79 4-4V4c0-2.21-1.79-4-4-4zM7.03 20H4.5V9.5h2.53V20zM5.76 8.16c-.97 0-1.76-.81-1.76-1.8s.79-1.8 1.76-1.8 1.76.81 1.76 1.8-.79 1.8-1.76 1.8zM20 20h-2.53v-4.9c0-1.17-.02-2.67-1.63-2.67-1.63 0-1.88 1.27-1.88 2.58V20h-2.53V9.5h2.43v1.3h.03c.34-.65 1.34-1.54 2.76-1.54 2.95 0 3.35 1.94 3.35 4.46V20z"/>
+      </svg>
+      <span>LinkedIn</span>
+    </a>
+  </div>
+
+<script>
+/* ---------- storage keys & helpers ---------- */
+const KEYS={MEMBERS:'tass_members_v_final',PAYMENTS:'tass_payments_v_final',CHAT:'tass_chat_v_final',SESSION:'tass_session_v_final',TYPING:'tass_typing_v_final',OTP:'tass_otp_v1'};
+const DEFAULTS={admin:{username:'admin',password:'admin1234@2025'},patron:{username:'patron',password:'patron1234@2025'},mpesaNumber:'+254769723853'};
+const $=id=>document.getElementById(id);
+const uid=()=> 'id_'+Date.now()+'_'+Math.floor(Math.random()*9000);
+const nowISO=()=>new Date().toISOString();
+const nowTime=()=>new Date().toLocaleString();
+function save(k,v){localStorage.setItem(k,JSON.stringify(v));}
+function load(k,def=null){try{const s=localStorage.getItem(k);return s?JSON.parse(s):def;}catch(e){return def;}}
+function showToast(msg,t=2200,type=null){
+  const x=$('toast');
+  x.classList.remove('success','error');
+  if(type==='success') x.classList.add('success');
+  if(type==='error') x.classList.add('error');
+  x.textContent=msg;
+  x.classList.add('show');
+  x.setAttribute('aria-hidden','false');
+  clearTimeout(x._t);
+  x._t=setTimeout(()=>{x.classList.remove('show');x.setAttribute('aria-hidden','true');x.classList.remove('success','error');},t);
+} 
+
+/* ---------- init ---------- */
+function init(){
+  if(!localStorage.getItem(KEYS.MEMBERS)) save(KEYS.MEMBERS,[]);
+  if(!localStorage.getItem(KEYS.PAYMENTS)) save(KEYS.PAYMENTS,[]);
+  if(!localStorage.getItem(KEYS.CHAT)) save(KEYS.CHAT,[]);
+  if(!localStorage.getItem(KEYS.TYPING)) save(KEYS.TYPING,{});
+
+  $('navMember').addEventListener('click',()=>attemptOpen('member'));
+  $('navAdmin').addEventListener('click',()=>attemptOpen('admin'));
+  $('navPatron').addEventListener('click',()=>attemptOpen('patron'));
+  $('tabRegister').addEventListener('click',()=>setAuthTab('register'));
+  $('tabSignIn').addEventListener('click',()=>setAuthTab('signin'));
+  // reveal register details on demand
+  const revealBtn=$('registerRevealBtn');
+  if(revealBtn){
+    revealBtn.addEventListener('click',()=>{
+      const det=$('registerDetails');
+      if(det){ det.style.display='block'; }
+      revealBtn.style.display='none';
+      revealBtn.setAttribute('aria-expanded','true');
+      const first=$('rName'); if(first) first.focus();
+      const form=$('registerForm');
+      if(form && !form._startedListener){
+        const onStart=()=>{ showToast('You are now creating account',2500,'success'); form.removeEventListener('input',onStart,true); form._startedListener=true; };
+        form.addEventListener('input',onStart,true);
+      }
+    });
+  }
+  const aboutBtn=$('aboutBtn');
+  if(aboutBtn){
+    aboutBtn.addEventListener('click',()=>{
+      const cont=$('aboutContent');
+      const isOpen=cont && cont.style.display!=='none';
+      if(cont){ cont.style.display=isOpen?'none':'block'; }
+      aboutBtn.setAttribute('aria-expanded', String(!isOpen));
+    });
+  }
+  const paymentsBtn=$('paymentsBtn');
+  if(paymentsBtn){
+    paymentsBtn.addEventListener('click',()=>{
+      const cont=$('paymentsContent');
+      const isOpen=cont && cont.style.display!=='none';
+      if(cont){ cont.style.display=isOpen?'none':'block'; }
+      paymentsBtn.setAttribute('aria-expanded', String(!isOpen));
+    });
+  }
+  const contactBtn=$('contactBtn');
+  if(contactBtn){
+    contactBtn.addEventListener('click',()=>{
+      const cont=$('contactContent');
+      if(cont){
+        const open = cont.style.display !== 'none';
+        cont.style.display = open ? 'none' : 'block';
+        contactBtn.setAttribute('aria-expanded', String(!open));
+      }
+    });
+  }
+  // password toggles
+  const rPT=$('rPassToggle'); const rP=$('rPass');
+  if(rPT && rP){ rPT.addEventListener('click',()=>{ rP.type = rP.type==='password' ? 'text' : 'password'; rPT.textContent = rP.type==='password' ? 'Show' : 'Hide'; }); }
+  const sPT=$('sPassToggle'); const sP=$('sPass');
+  if(sPT && sP){ sPT.addEventListener('click',()=>{ sP.type = sP.type==='password' ? 'text' : 'password'; sPT.textContent = sP.type==='password' ? 'Show' : 'Hide'; }); }
+  // registration number live validation
+  const rReg=$('rReg'); const rRegStatus=$('rRegStatus');
+  if(rReg && rRegStatus){
+    const updateRegStatus=()=>{
+      const val=(rReg.value||'').toUpperCase();
+      if(val.startsWith('W132/G/')){ rRegStatus.textContent='Verified'; rRegStatus.className='inline-status good'; }
+      else if(val.length>0){ rRegStatus.textContent='Failed: try again or check your registration number and try again'; rRegStatus.className='inline-status bad'; }
+      else { rRegStatus.textContent=''; rRegStatus.className='inline-status'; }
+    };
+    rReg.addEventListener('input',updateRegStatus);
+    updateRegStatus();
+  }
+  const regClear=$('registerClearBtn');
+  if(regClear){
+    regClear.addEventListener('click',()=>{
+      const form=$('registerForm');
+      if(form){ form.reset(); }
+      if(rRegStatus){ rRegStatus.textContent=''; rRegStatus.className='inline-status'; }
+      showToast('You have successfully deleted your details, you can now begin afresh',2600,'error');
+    });
+  }
+  // non-editable message cells: show red toast on hover/focus with cooldown
+  const adminPayTbl=$('adminPaymentsTable');
+  if(adminPayTbl){
+    let _neLast=0;
+    const handler=(ev)=>{
+      if(!ev) return; const t=ev.target && (ev.target.closest? ev.target.closest('.msg-noedit'): null);
+      if(t){ const now=Date.now(); if(now-_neLast>1400){ _neLast=now; showToast("Can't edit",1400,'error'); } }
+    };
+    adminPayTbl.addEventListener('mousemove',handler,true);
+    adminPayTbl.addEventListener('mouseenter',handler,true);
+    adminPayTbl.addEventListener('focusin',handler,true);
+  }
+  // parser result area toast on interaction
+  const parserOut=$('mpesaParseResult');
+  if(parserOut){
+    let _poLast=0;
+    const ph=(ev)=>{ if(parserOut.classList.contains('msg-noedit')){ const now=Date.now(); if(now-_poLast>1400){ _poLast=now; showToast("Can't edit",1400,'error'); } } };
+    ['click','keydown','mousedown','touchstart'].forEach(evt=>parserOut.addEventListener(evt,ph,true));
+  }
+  setTimeout(()=>{ $('mainLoader').style.display='none'; $('app').style.display='block'; renderTime(); setInterval(renderTime,1000); initialSessionCheck(); try{ if(sessionStorage.getItem('flash_logout')){ showToast('You have successfully logged out',2500,'error'); sessionStorage.removeItem('flash_logout'); } }catch(e){} },800);
+  setInterval(renderTypingIndicators,800); setInterval(renderAllChats,1500);
+  // Auto-update charts when data changes in other tabs or over time
+  window.addEventListener('storage',(e)=>{ try{ if(e && (e.key===KEYS.MEMBERS || e.key===KEYS.PAYMENTS)){ renderAllTables(); renderAllCharts(); renderQuickLists(); } }catch(err){} });
+  setInterval(renderAllCharts,15000);
+  $('registerForm').addEventListener('submit',handleRegister);
+  renderAllTables(); renderAllCharts(); renderAllChats(); renderQuickLists();
+}
+
+/* ---------- time ---------- */
+function renderTime(){const t=nowTime();['memberTime','adminTime','patronTime'].forEach(id=>{const el=$(id);if(el)el.textContent=t;});}
+
+/* ---------- auth tab ---------- */
+function setAuthTab(tab){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  if(tab==='register'){
+    $('tabRegister').classList.add('active');
+    $('registerPanel').style.display='block';
+    $('signinPanel').style.display='none';
+    // reset progressive disclosure each time register tab is opened
+    resetRegisterDisclosure();
+  } else {
+    $('tabSignIn').classList.add('active');
+    $('registerPanel').style.display='none';
+    $('signinPanel').style.display='block';
+  }
+}
+
+function resetRegisterDisclosure(){
+  const btn=$('registerRevealBtn');
+  const det=$('registerDetails');
+  if(btn){ btn.style.display='inline-block'; btn.setAttribute('aria-expanded','false'); }
+  if(det){ det.style.display='none'; }
+}
+
+/* ---------- validation ---------- */
+function validEmail(e){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(e||''));}
+function isPhone(p){ if(!p) return false; const s=String(p).trim().replace(/\s+/g,''); return /^\+2547\d{8}$/.test(s) || /^07\d{8}$/.test(s); }
+function normalizePhone(p){ if(!p) return ''; let s=String(p).trim().replace(/\s+/g,''); if(/^07\d{8}$/.test(s)) s='+254'+s.slice(1); return s; }
+function strongPassword(p){ if(!p) return false; // min 8, 1 uppercase, 1 number, 1 special
+  return /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/.test(p);
+}
+function isValidRegPrefix(reg){ if(!reg) return false; return String(reg).toUpperCase().startsWith('W132/G/'); }
+
+/* ---------- registration & sign-in ---------- */
+function handleRegister(e){e.preventDefault();const name=$('rName').value.trim();const regInput=$('rReg').value.trim();const reg=regInput.toUpperCase();const email=$('rEmail').value.trim();let phone=$('rPhone').value.trim();const dept=$('rDept').value.trim();const year=$('rYear').value;const pass=$('rPass').value;const notes=$('rNotes')?$('rNotes').value.trim():'';if(!name||!reg||!email||!phone||!pass){showToast('Fill required fields');return;}if(!isValidRegPrefix(reg)){showToast('Failed, try again or check your registration number and try again',2600,'error');return;}if(!validEmail(email)){showToast('Invalid email');return;}if(!isPhone(phone)){showToast('Invalid phone');return;}phone=normalizePhone(phone);if(!strongPassword(pass)){showToast('Weak password');return;}let members=load(KEYS.MEMBERS,[]);if(members.find(m=>m.reg.toLowerCase()===reg.toLowerCase())){showToast('Registration already exists');return;}if(members.find(m=>m.email.toLowerCase()===email.toLowerCase())){showToast('Email already used');return;}members.push({id:uid(),name,reg,email,phone,department:dept,year,password:pass,paymentStatus:'Not Paid',notes,createdAt:nowISO()});save(KEYS.MEMBERS,members);showToast('You have successfully created your account, proceed to sign in',2600,'success');$('registerForm').reset();const rs=$('rRegStatus'); if(rs){ rs.textContent=''; rs.className='inline-status'; }resetRegisterDisclosure();renderAllTables();renderAllCharts();}
+
+function memberSignIn(){const reg=$('sReg').value.trim();const pass=$('sPass').value; if(!reg||!pass){showToast('Provide credentials');return;}const members=load(KEYS.MEMBERS,[]);const m=members.find(x=>x.reg.toLowerCase()===reg.toLowerCase()); if(!m || m.password!==pass){showToast('Invalid credentials');return;}save(KEYS.SESSION,{role:'member',user:m.reg});showToast('Signing in...');showTransitionLoaderThenOpen('member');}
+
+function adminSignInPrompt(){const user=prompt('Admin username:');if(!user) return;const pass=prompt('Admin password:');if(!pass) return; if(user===DEFAULTS.admin.username && pass===DEFAULTS.admin.password){save(KEYS.SESSION,{role:'admin',user:'admin'});showToast('Welcome Admin');showTransitionLoaderThenOpen('admin');}else showToast('Invalid admin credentials');}
+function patronSignInPrompt(){const user=prompt('Patron username:');if(!user) return;const pass=prompt('Patron password:');if(!pass) return; if(user===DEFAULTS.patron.username && pass===DEFAULTS.patron.password){save(KEYS.SESSION,{role:'patron',user:'patron'});showToast('Welcome Patron');showTransitionLoaderThenOpen('patron');}else showToast('Invalid patron credentials');}
+
+/* ---------- session & dashboard open ---------- */
+function getSession(){return load(KEYS.SESSION,null);}function clearSession(){localStorage.removeItem(KEYS.SESSION);} 
+function showTransitionLoaderThenOpen(role){$('mainLoader').style.display='flex';setTimeout(()=>{$('mainLoader').style.display='none';openDashboard(role);},700);} 
+function attemptOpen(role){const s=getSession();if(!s){alert('Sign in first');return;}if(s.role!==role){alert('You are not signed in with this role');return;}showTransitionLoaderThenOpen(role);} 
+
+function openDashboard(role){
+  // hide header and home completely when dashboards are opened
+  const header = $('mainHeader'); if(header) header.style.display='none';
+  const footer = $('mainFooter'); if(footer) footer.style.display='none';
+  const bcl = $('bottomCenterLink'); if(bcl) bcl.style.display='block';
+  const homeRing = $('homeRing'); if(homeRing) homeRing.style.display='block';
+  const dlogo = $('dashLogo'); if(dlogo) dlogo.style.display='block';
+  $('homeView').style.display='none'; $('dashboards').style.display='block';
+  // hide all dashboards then show the requested one
+  $('memberDashboard').style.display='none'; $('adminDashboard').style.display='none'; $('patronDashboard').style.display='none';
+  if(role==='member'){ $('memberDashboard').style.display='block'; initializeMemberDashboard(); }
+  if(role==='admin'){ $('adminDashboard').style.display='block'; initializeAdminDashboard(); }
+  if(role==='patron'){ $('patronDashboard').style.display='block'; initializePatronDashboard(); }
+  // show small bottom-left footer for dashboards
+  $('dashboardFooter').style.display='block';
+  document.getElementById('dashboards').scrollIntoView({behavior:'smooth'});
+}
+function logout(){ if(!confirm('Are you sure you want to exit?')) return; try{ sessionStorage.setItem('flash_logout','1'); }catch(e){} clearSession(); location.reload(); }
+
+/* ---------- initialize dashboards ---------- */
+function initialSessionCheck(){ const s=getSession(); if(s){ $('homeView').style.display='none'; $('dashboards').style.display='block'; showTransitionLoaderThenOpen(s.role); } else { $('homeView').style.display='block'; $('dashboards').style.display='none'; } }
+function initialSessionCheck(){
+  const s=getSession();
+  const bcl=$('bottomCenterLink');
+  const homeRing=$('homeRing');
+  const dlogo=$('dashLogo');
+  if(s){
+    $('homeView').style.display='none';
+    $('dashboards').style.display='block';
+    if(bcl) bcl.style.display='block';
+    if(homeRing) homeRing.style.display='block';
+    if(dlogo) dlogo.style.display='block';
+    showTransitionLoaderThenOpen(s.role);
+  } else {
+    $('homeView').style.display='block';
+    $('dashboards').style.display='none';
+    if(bcl) bcl.style.display='none';
+    if(homeRing) homeRing.style.display='block';
+    if(dlogo) dlogo.style.display='none';
+  }
+}
+
+function initializeMemberDashboard(){
+  const s=getSession(); if(!s) return;
+  const members=load(KEYS.MEMBERS,[]);
+  const me=members.find(m=>m.reg.toLowerCase()===s.user.toLowerCase());
+  if(me){
+    $('memberGreeting').textContent='Hi! '+me.name;
+    $('memberReg').textContent=me.reg;
+    $('memberEmail').textContent=me.email;
+    if(me.paymentStatus==='Approved'){ showToast('You are a member — Welcome!'); }
+    const banner=$('memberStatus');
+    if(banner){
+      banner.className='status-banner';
+      if(me.paymentStatus==='Approved'){
+        banner.classList.add('ok');
+        banner.textContent=`Hi! ${me.name}, You are now an official member`;
+      } else if(me.paymentStatus==='Pending' || me.paymentStatus==='Pending Approval'){
+        banner.classList.add('pending');
+        banner.textContent='Confirming payment';
+      } else {
+        banner.classList.add('warn');
+        banner.textContent='Not paid';
+      }
+    }
+    // presence: update heartbeat and render chip
+    try{ updateMemberHeartbeat(me.reg); renderMemberPresence(me.reg); }catch(e){}
+    if(!window._presenceInt){ window._presenceInt = setInterval(()=>{ try{ const ss=getSession(); if(!ss||ss.role!=='member'){ clearInterval(window._presenceInt); window._presenceInt=null; return;} updateMemberHeartbeat(ss.user); renderMemberPresence(ss.user); }catch(e){} },15000); }
+  }
+  renderAllCharts(); renderAllChats(); renderQuickLists();
+  // hide any admin UI elements (safety)
+  const unsafe=['adminTabMembers','adminTabPayments','adminTabParser','adminMembersTable','adminPaymentsTable']; unsafe.forEach(id=>{const el=$(id); if(el) el.style.display='none';});
+  // restrict admin-only functions for members
+  restrictMemberPrivileges();
+}
+function initializeAdminDashboard(){ $('adminGreeting').textContent='Hi! Finance Director'; renderAllTables(); renderAllCharts(); renderAllChats(); renderQuickLists(); }
+function initializePatronDashboard(){ $('patronGreeting').textContent='Hi! Patron'; renderAllTables(); renderAllCharts(); renderAllChats(); renderQuickLists(); }
+
+function switchAdminTab(tab){
+  const views={members:'adminTabMembers',payments:'adminTabPayments',parser:'adminTabParser'};
+  ['adminTabMembers','adminTabPayments','adminTabParser'].forEach(id=>{ const el=$(id); if(el) el.style.display='none'; });
+  const target=views[tab];
+  if(target){ const el=$(target); if(el) el.style.display='block'; }
+}
+
+/* ---------- tables rendering ---------- */
+function renderAllTables(){ renderAdminMembersTable(); renderAdminPaymentsTable(); renderPatronMembersTable(); renderMemberQuick(); renderPatronQuick(); renderMembersListOnHome(); }
+function renderMembersListOnHome(){ const list=load(KEYS.MEMBERS,[]); const cont=$('membersList'); if(!cont) return; cont.innerHTML=''; if(!list.length){ cont.innerHTML='<div class="muted">No members yet.</div>'; return;} list.slice().reverse().forEach(m=>{ const d=document.createElement('div'); d.style.display='flex'; d.style.justifyContent='space-between'; d.style.padding='8px'; d.style.borderBottom='1px solid rgba(75,46,5,0.03)'; d.innerHTML=`<div><div style="font-weight:700;color:var(--brown-dark)">${escape(m.name)}</div><div style="font-size:0.86rem;color:var(--muted)">${escape(m.reg)} • ${escape(m.paymentStatus||'')}</div></div><div style="text-align:right;font-size:0.86rem;color:var(--muted)">${new Date(m.createdAt).toLocaleDateString()}</div>`; cont.appendChild(d); }); }
+function renderMemberQuick(){ const list=load(KEYS.MEMBERS,[]); const cont=$('memberQuick'); if(!cont) return; cont.innerHTML=''; if(!list.length){ cont.innerHTML='<div class="muted">No members yet.</div>'; return; } list.slice().reverse().forEach(m=>{ const d=document.createElement('div'); d.style.display='flex'; d.style.justifyContent='space-between'; d.style.padding='8px'; d.style.borderBottom='1px solid rgba(75,46,5,0.03)'; d.innerHTML=`<div><div style="font-weight:700;color:var(--brown-dark)">${escape(m.name)}</div><div style="font-size:0.86rem;color:var(--muted)">${escape(m.reg)} • ${escape(m.paymentStatus||'')}</div></div><div style="text-align:right;font-size:0.86rem;color:var(--muted)">${new Date(m.createdAt).toLocaleDateString()}</div>`; cont.appendChild(d); }); }
+function renderPatronQuick(){ const list=load(KEYS.MEMBERS,[]); const cont=$('patronQuick'); if(!cont) return; cont.innerHTML=''; if(!list.length){ cont.innerHTML='<div class="muted">No members yet.</div>'; return; } list.slice().reverse().forEach(m=>{ const d=document.createElement('div'); d.style.display='flex'; d.style.justifyContent='space-between'; d.style.padding='8px'; d.style.borderBottom='1px solid rgba(75,46,5,0.03)'; d.innerHTML=`<div><div style="font-weight:700;color:var(--brown-dark)">${escape(m.name)}</div><div style="font-size:0.86rem;color:var(--muted)">${escape(m.reg)}</div></div><div style="text-align:right;font-size:0.86rem;color:var(--muted)">${new Date(m.createdAt).toLocaleDateString()}</div>`; cont.appendChild(d); }); }
+
+function renderAdminMembersTable(){ const members=load(KEYS.MEMBERS,[]); const table=$('adminMembersTable'); if(!table) return; table.innerHTML='<tr><th>Reg</th><th>Name</th><th>Email</th><th>Payment</th><th>Actions</th></tr>'; members.forEach(m=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${escape(m.reg)}</td><td>${escape(m.name)}</td><td>${escape(m.email)}</td><td>${escape(m.paymentStatus||'Not Paid')}</td><td><button class="btn small approve3d" onclick="adminApproveMember('${m.reg}')">Approve</button> <button class="btn small decline3d" onclick="adminDeclineMember('${m.reg}')">Decline</button> <button class="btn small delete3d" onclick="adminRemoveMember('${m.reg}')">Delete</button> <button class="btn small ghost" onclick="adminResetPassword('${m.reg}')">Reset PW</button></td>`; table.appendChild(tr); }); }
+function renderAdminPaymentsTable(){ const payments=load(KEYS.PAYMENTS,[]); const table=$('adminPaymentsTable'); if(!table) return; table.innerHTML='<tr><th>Member</th><th>Type</th><th>Message</th><th>Amount</th><th>Phone</th><th>Matched</th><th>Valid</th><th>Time</th><th>Action</th></tr>'; payments.forEach(p=>{ const tr=document.createElement('tr'); const parsed = p.parsed && typeof p.parsed=== 'object' ? p.parsed : parseMpesaText(p.message, p.type); const amount=parsed?.amount||''; const phone=parsed?.phone||''; const matchedChip = parsed?.valid ? '<span class="status-chip chip-yes">Yes</span>' : '<span class="status-chip chip-no">No</span>'; const validChip = parsed?.valid ? '<span class="status-chip chip-valid">Valid payment</span>' : '<span class="status-chip chip-invalid">Invalid payment</span>'; tr.innerHTML=`<td>${escape(p.reg)}</td><td>${escape(p.type)}</td><td class="msg-noedit" title=\"${escape(p.message)}\" style=\"max-width:420px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis\">${escape(p.message)}</td><td>${escape(amount)}</td><td>${escape(phone)}</td><td>${matchedChip}</td><td>${validChip}</td><td>${new Date(p.time).toLocaleString()}</td><td><button class=\"btn small approve3d\" onclick=\"adminApprovePayment('${p.id}')\">Approve</button> <button class=\"btn small decline3d\" onclick=\"adminDeclinePayment('${p.id}')\">Decline</button> <button class=\"btn small ghost\" onclick=\"adminCopyPaymentMessage('${p.id}')\">Copy Msg</button></td>`; table.appendChild(tr); }); }
+function renderPatronMembersTable(){ const members=load(KEYS.MEMBERS,[]); const table=$('patronMembersTable'); if(!table) return; table.innerHTML='<tr><th>Reg</th><th>Name</th><th>Email</th><th>Payment</th><th>Action</th></tr>'; members.forEach(m=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${escape(m.reg)}</td><td>${escape(m.name)}</td><td>${escape(m.email)}</td><td>${escape(m.paymentStatus||'Not Paid')}</td><td><button class="btn small warn" onclick="patronRemoveMember('${m.reg}')">Remove</button></td>`; table.appendChild(tr); }); }
+
+/* ---------- admin actions ---------- */
+function adminAddMember(){ const reg=$('adminAddReg').value.trim(); const name=$('adminAddName').value.trim(); const email=$('adminAddEmail').value.trim(); const pass=$('adminAddPass').value; if(!reg||!name||!email||!pass){ alert('Fill all fields'); return; } if(!validEmail(email)){ alert('Invalid email'); return; } if(!strongPassword(pass)){ alert('Weak password'); return; } const members=load(KEYS.MEMBERS,[]); if(members.find(m=>m.reg.toLowerCase()===reg.toLowerCase())){ alert('Reg exists'); return; } members.push({id:uid(),name,reg,email,password:pass,paymentStatus:'Not Paid',createdAt:nowISO()}); save(KEYS.MEMBERS,members); renderAllTables(); showToast('Member added'); $('adminAddReg').value=''; $('adminAddName').value=''; $('adminAddEmail').value=''; $('adminAddPass').value=''; }
+function adminApproveMember(reg){
+  // Require a recent valid parsed payment for this member
+  const payments=load(KEYS.PAYMENTS,[]);
+  const last=payments.slice().reverse().find(p=>p.reg && p.reg.toLowerCase()===reg.toLowerCase());
+  if(!last){ showToast('Parse first',2000,'error'); alert('Contact the member for better payment details'); return; }
+  const parsed = last.parsed && typeof last.parsed==='object' ? last.parsed : parseMpesaText(last.message, last.type);
+  if(!parsed.valid){ showToast('Parse first',2000,'error'); alert('Contact the member for better payment details'); return; }
+  const members=load(KEYS.MEMBERS,[]);
+  const m=members.find(x=>x.reg.toLowerCase()===reg.toLowerCase());
+  if(m){ m.paymentStatus='Approved'; save(KEYS.MEMBERS,members); renderAllTables(); renderAllCharts(); showToast('Member approved'); }
+}
+function adminDeclineMember(reg){ const members=load(KEYS.MEMBERS,[]); const m=members.find(x=>x.reg.toLowerCase()===reg.toLowerCase()); if(m){ m.paymentStatus='Declined'; save(KEYS.MEMBERS,members); renderAllTables(); renderAllCharts(); showToast('Member declined'); } }
+function adminRemoveMember(reg){ if(!confirm('Remove this member?')) return; let members=load(KEYS.MEMBERS,[]); members=members.filter(m=>m.reg.toLowerCase()!==reg.toLowerCase()); save(KEYS.MEMBERS,members); let payments=load(KEYS.PAYMENTS,[]); payments=payments.filter(p=>p.reg.toLowerCase()!==reg.toLowerCase()); save(KEYS.PAYMENTS,payments); renderAllTables(); renderAllCharts(); showToast('Member removed'); }
+function adminResetPassword(reg){ if(!confirm('Reset password for '+reg+'?')) return; const members=load(KEYS.MEMBERS,[]); const m=members.find(x=>x.reg.toLowerCase()===reg.toLowerCase()); if(!m){ alert('Not found'); return; } const temp='tmp'+Math.floor(1000+Math.random()*9000); m.password=temp; save(KEYS.MEMBERS,members); alert('Temporary password: '+temp); }
+
+/* ---------- payments (member) ---------- */
+let pendingPaymentContext=null; function openMpesa(type,amount){ const s=getSession(); if(!s||s.role!=='member'){ alert('Sign in as member'); return; } pendingPaymentContext={type,reg:s.user,amount}; $('mpesaTitle').textContent=`${type} — Paste M-Pesa message (to ${DEFAULTS.mpesaNumber})`; $('mpesaText').value=''; $('mpesaStatus').textContent=''; $('mpesaModal').style.display='block';
+  // prepare parser textarea for single-paste then lock
+  const ta=$('mpesaRaw'); if(ta){
+    // fully unlock first
+    ta.readOnly=false; ta.classList.remove('parser-locked'); if(ta._lockHandler){ ['keydown','input','paste','beforeinput','drop'].forEach(evt=>ta.removeEventListener(evt,ta._lockHandler,true)); } ta._locked=false; ta._lockHandler=null; ta._lastLockToast=0; ta.value='';
+    const lockNow=(e)=>{ if(e){ /* allow paste to complete, then lock */ setTimeout(()=>{ ta.readOnly=true; ta.classList.add('parser-locked'); const block=(ev)=>{ ev && ev.preventDefault && ev.preventDefault(); const now=Date.now(); if(!ta._lastLockToast || now-ta._lastLockToast>1400){ ta._lastLockToast=now; showToast("Can't edit",1400,'error'); } return false; }; ta._locked=true; ta._lockHandler=block; ['keydown','input','paste','beforeinput','drop'].forEach(evt=>ta.addEventListener(evt,block,true)); },0);} };
+    const once=(ev)=>{ lockNow(ev); ta.removeEventListener('input',once,true); ta.removeEventListener('paste',once,true); };
+    ta.addEventListener('input',once,true); ta.addEventListener('paste',once,true);
+  }
+}
+function closeMpesaModal(){ $('mpesaModal').style.display='none'; pendingPaymentContext=null; }
+function submitMpesa(){ const msg=$('mpesaText').value.trim(); if(!msg){ $('mpesaStatus').textContent='Paste the SMS'; return; } const payments=load(KEYS.PAYMENTS,[]); const id=uid(); const parsed=parseMpesaText(msg, pendingPaymentContext.type); payments.push({id,reg:pendingPaymentContext.reg,type:pendingPaymentContext.type,amount:pendingPaymentContext.amount,message:msg,status:'Pending',time:nowISO(),parsed}); save(KEYS.PAYMENTS,payments); const members=load(KEYS.MEMBERS,[]); const m=members.find(x=>x.reg.toLowerCase()===pendingPaymentContext.reg.toLowerCase()); if(m){ m.paymentStatus='Pending Approval'; save(KEYS.MEMBERS,members); } closeMpesaModal(); renderAllTables(); renderAllCharts(); showToast('M-Pesa saved — awaiting approval'); }
+
+function adminApprovePayment(id){ let payments=load(KEYS.PAYMENTS,[]); const p=payments.find(x=>x.id===id); if(!p) return; const parsed = p.parsed && typeof p.parsed==='object' ? p.parsed : parseMpesaText(p.message, p.type); if(!parsed.valid){ showToast('Parse first',2000,'error'); alert('Contact the member for better payment details'); return; } p.status='Approved'; save(KEYS.PAYMENTS,payments); const members=load(KEYS.MEMBERS,[]); const m=members.find(x=>x.reg.toLowerCase()===p.reg.toLowerCase()); if(m){ m.paymentStatus='Approved'; save(KEYS.MEMBERS,members); } renderAllTables(); renderAllCharts(); showToast('Payment approved'); }
+function adminDeclinePayment(id){ let payments=load(KEYS.PAYMENTS,[]); const p=payments.find(x=>x.id===id); if(!p) return; p.status='Declined'; save(KEYS.PAYMENTS,payments); const members=load(KEYS.MEMBERS,[]); const m=members.find(x=>x.reg.toLowerCase()===p.reg.toLowerCase()); if(m){ m.paymentStatus='Declined'; save(KEYS.MEMBERS,members); } renderAllTables(); renderAllCharts(); showToast('Payment declined'); }
+function adminCopyPaymentMessage(id){ const payments=load(KEYS.PAYMENTS,[]); const p=payments.find(x=>x.id===id); if(!p) return; const msg=p.message||''; const doCopy=async()=>{ try{ await navigator.clipboard.writeText(msg); showToast('Message copied',1600,'success'); }catch(e){ try{ const ta=document.createElement('textarea'); ta.value=msg; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); showToast('Message copied',1600,'success'); }catch(err){ alert('Copy failed'); } } }; doCopy(); }
+function patronRemoveMember(reg){ if(!confirm('Remove member '+reg+'?')) return; let members=load(KEYS.MEMBERS,[]); members=members.filter(m=>m.reg.toLowerCase()!==reg.toLowerCase()); save(KEYS.MEMBERS,members); let payments=load(KEYS.PAYMENTS,[]); payments=payments.filter(p=>p.reg.toLowerCase()!==reg.toLowerCase()); save(KEYS.PAYMENTS,payments); renderAllTables(); renderAllCharts(); showToast('Member removed'); }
+
+/* ---------- chat ---------- */
+function sendChat(role){ const inputId = role==='admin' ? 'chatAdminIn' : (role==='patron' ? 'chatPatronIn' : 'chatMemberIn'); const el=$(inputId); if(!el) return; const text=el.value.trim(); if(!text) return; const s=getSession(); if(!s) return alert('Sign in to chat'); const members=load(KEYS.MEMBERS,[]); let name = s.role==='member' ? (members.find(m=>m.reg.toLowerCase()===s.user.toLowerCase())?.name||s.user) : (s.role==='admin' ? 'Finance Director' : 'Patron'); const chat=load(KEYS.CHAT,[]); chat.push({id:uid(),user:name,role:s.role,text,time:nowTime()}); save(KEYS.CHAT,chat); el.value=''; renderAllChats(); clearTypingSignal(s.role); }
+function renderAllChats(){ renderChatBox('chatMemberBox'); renderChatBox('chatAdminBox'); renderChatBox('chatPatronBox'); }
+function renderChatBox(id){ const box=$(id); if(!box) return; box.innerHTML=''; const chat=load(KEYS.CHAT,[]); chat.forEach(m=>{ const d=document.createElement('div'); const cls=m.role==='member'?'me':(m.role==='admin'?'admin':'patron'); d.className='bubble '+cls; d.dataset.msgId=m.id; let body = `<div style="margin-top:6px">${escape(m.text||'')}</div>`; if(m.attachment){ const a=m.attachment; if(a.kind==='image'){ body+=`<div style="margin-top:8px"><img src="${a.url}" alt="image" style="max-width:240px;border-radius:8px"></div>`; } else if(a.kind==='video'){ body+=`<div style="margin-top:8px"><video src="${a.url}" style="max-width:260px;border-radius:8px" controls></video></div>`; } else if(a.kind==='file'){ body+=`<div style="margin-top:8px"><a href="${a.url}" target="_blank" rel="noopener">${escape(a.name||'document')}</a></div>`; } }
+  d.innerHTML=`<strong>${escape(m.user)}</strong> <span style="opacity:0.8;font-size:0.85rem">[${m.time}]</span>${body}`;
+  const showMenu=(ev)=>{ ev.preventDefault(); ev.stopPropagation(); selectChatMessage(m.id, d); openChatActionsAt(ev.clientX, ev.clientY); };
+  d.addEventListener('contextmenu',showMenu);
+  d.addEventListener('click',showMenu);
+  box.appendChild(d); }); box.scrollTop=box.scrollHeight; }
+function triggerChatFile(role){ const id = role==='admin' ? 'chatAdminFile' : (role==='patron' ? 'chatPatronFile' : 'chatMemberFile'); const f=$(id); if(f) f.click(); }
+function onChatFileSelected(role){ const s=getSession(); if(!s) return alert('Sign in'); const fileInputId = role==='admin' ? 'chatAdminFile' : (role==='patron' ? 'chatPatronFile' : 'chatMemberFile'); const textId = role==='admin' ? 'chatAdminIn' : (role==='patron' ? 'chatPatronIn' : 'chatMemberIn'); const f=$(fileInputId); const t=$(textId); if(!f||!f.files||!f.files[0]) return; const file=f.files[0]; const url=URL.createObjectURL(file); let kind='file'; if(file.type.startsWith('image/')) kind='image'; else if(file.type.startsWith('video/')) kind='video'; const name=file.name; // attach to message queue by sending immediately (with optional text)
+  const members=load(KEYS.MEMBERS,[]); let nameUser = s.role==='member' ? (members.find(m=>m.reg.toLowerCase()===s.user.toLowerCase())?.name||s.user) : (s.role==='admin' ? 'Finance Director' : 'Patron'); const chat=load(KEYS.CHAT,[]); chat.push({id:uid(),user:nameUser,role:s.role,text:(t&&t.value?t.value.trim():''),time:nowTime(),attachment:{kind,url,name}}); save(KEYS.CHAT,chat); if(t) t.value=''; if(f) f.value=''; renderAllChats(); clearTypingSignal(s.role); }
+
+/* ---------- chat actions (forward, delete, copy, share, info) ---------- */
+let _chatSel=null; // {id, el}
+function selectChatMessage(id, el){ // clear previous
+  document.querySelectorAll('.bubble.selected').forEach(x=>x.classList.remove('selected'));
+  _chatSel={id, el}; if(el) el.classList.add('selected');
+}
+function openChatActionsAt(x,y){ const menu=$('chatActions'); if(!menu) return; menu.style.left=(x+6)+'px'; menu.style.top=(y+6)+'px'; menu.style.display='block'; menu.setAttribute('aria-hidden','false'); }
+function hideChatActions(){ const menu=$('chatActions'); if(menu){ menu.style.display='none'; menu.setAttribute('aria-hidden','true'); } document.querySelectorAll('.bubble.selected').forEach(x=>x.classList.remove('selected')); _chatSel=null; }
+document.addEventListener('click',(e)=>{ const m=e.target && e.target.closest? e.target.closest('#chatActions') : null; if(!m) hideChatActions(); }, true);
+$('chatActions').addEventListener('click',(e)=>{
+  const btn=e.target && e.target.closest('button'); if(!btn) return; const act=btn.getAttribute('data-act'); if(!_chatSel||!_chatSel.id) return; const id=_chatSel.id; if(act==='delete') deleteChatMessage(id); else if(act==='copy') copyChatMessage(id); else if(act==='share') shareChatMessage(id); else if(act==='info') infoChatMessage(id); else if(act==='forward') forwardChatMessage(id); hideChatActions(); });
+
+function getChatById(id){ const chat=load(KEYS.CHAT,[]); return chat.find(x=>x.id===id)||null; }
+function saveChatList(list){ save(KEYS.CHAT,list); renderAllChats(); }
+function deleteChatMessage(id){ let chat=load(KEYS.CHAT,[]); const before=chat.length; chat=chat.filter(x=>x.id!==id); saveChatList(chat); if(chat.length<before) showToast('Message deleted',1400,'success'); }
+function copyChatMessage(id){ const m=getChatById(id); if(!m) return; const text=m.text||''; const withLink = m.attachment && m.attachment.url ? text+"\n"+m.attachment.url : text; (async()=>{ try{ await navigator.clipboard.writeText(withLink); showToast('Copied',1200,'success'); }catch(e){ try{ const ta=document.createElement('textarea'); ta.value=withLink; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); showToast('Copied',1200,'success'); }catch(err){ alert('Copy failed'); } } })(); }
+function shareChatMessage(id){ const m=getChatById(id); if(!m) return; const text=m.text||''; const url=m.attachment && m.attachment.url ? m.attachment.url : undefined; if(navigator.share){ navigator.share({title:'TASSJOOUST Chat', text, url}).catch(()=>{}); } else { copyChatMessage(id); showToast('Share not supported — copied instead',1600,'error'); } }
+function infoChatMessage(id){ const m=getChatById(id); if(!m) return; const info={user:m.user, role:m.role, time:m.time, hasAttachment: !!m.attachment, attachment: m.attachment? {kind:m.attachment.kind, name:m.attachment.name||'', url:m.attachment.url||''}: null}; alert('Message info:\n'+JSON.stringify(info,null,2)); }
+function forwardChatMessage(id){ const m=getChatById(id); if(!m) return; const s=getSession(); if(!s){ alert('Sign in'); return; } const target=prompt('Forward to: member / admin / patron (type one)'); if(!target) return; const role = ['member','admin','patron'].includes(target.trim().toLowerCase()) ? target.trim().toLowerCase() : s.role; const members=load(KEYS.MEMBERS,[]); let nameUser = s.role==='member' ? (members.find(mm=>mm.reg.toLowerCase()===s.user.toLowerCase())?.name||s.user) : (s.role==='admin' ? 'Finance Director' : 'Patron'); const chat=load(KEYS.CHAT,[]); chat.push({id:uid(),user:nameUser,role, text:(m.text?('Forwarded: '+m.text):'Forwarded'), time:nowTime(), attachment:m.attachment? {...m.attachment}: undefined}); saveChatList(chat); showToast('Message forwarded',1400,'success'); }
+
+/* ---------- typing indicator ---------- */
+function typingSignal(role){ const s=getSession(); if(!s) return; const members=load(KEYS.MEMBERS,[]); const name = s.role==='member' ? (members.find(m=>m.reg.toLowerCase()===s.user.toLowerCase())?.name||s.user) : (s.role==='admin' ? 'Finance Director' : 'Patron'); const t=load(KEYS.TYPING,{}); t[role]={name,until:Date.now()+3000,ts:Date.now()}; save(KEYS.TYPING,t); }
+function clearTypingSignal(role){ const t=load(KEYS.TYPING,{}); if(t[role]){ delete t[role]; save(KEYS.TYPING,t); renderTypingIndicators(); }}
+function renderTypingIndicators(){ const t=load(KEYS.TYPING,{}); const s=getSession(); const now=Date.now(); let changed=false; for(const k in t){ if(t[k].until<now){ delete t[k]; changed=true; } } if(changed) save(KEYS.TYPING,t); setTypingEl('typingMember','member',s,t); setTypingEl('typingAdmin','admin',s,t); setTypingEl('typingPatron','patron',s,t); }
+function setTypingEl(elId,role,s,typing){ const el=$(elId); if(!el) return; if(typing[role] && (!s || s.role !== role)){ el.textContent=`${typing[role].name} is typing...`; el.style.display='block'; el.setAttribute('aria-hidden','false'); } else { el.textContent=''; el.style.display='none'; el.setAttribute('aria-hidden','true'); }}
+
+/* ---------- change password ---------- */
+function openChangePassword(){ $('pwModal').style.display='block'; }
+function closePwModal(){ $('pwModal').style.display='none'; $('pwStatus').textContent=''; $('oldPW').value=''; $('newPW').value=''; }
+function confirmChangePassword(){ const oldp=$('oldPW').value; const newp=$('newPW').value; const s=getSession(); if(!s||s.role!=='member') return alert('Sign in as member'); const members=load(KEYS.MEMBERS,[]); const m=members.find(x=>x.reg.toLowerCase()===s.user.toLowerCase()); if(!m) return alert('User not found'); if(m.password!==oldp){ $('pwStatus').textContent='Incorrect previous password'; return; } if(!strongPassword(newp)){ $('pwStatus').textContent='Weak new password'; return; } m.password=newp; save(KEYS.MEMBERS,members); closePwModal(); alert('Password changed'); }
+
+/* ---------- forgot ---------- */
+function memberForgot(){
+  const reg=prompt('Enter your registration number to reset password:'); if(!reg) return;
+  const members=load(KEYS.MEMBERS,[]);
+  const m=members.find(x=>x.reg.toLowerCase()===reg.toLowerCase());
+  if(!m){ alert('Not found'); return; }
+  const masked=maskEmail(m.email||'');
+  const email=prompt('Confirm your email to receive OTP:\n'+masked+'\nEnter your full email:');
+  if(!email) return; if(String(email).trim().toLowerCase()!==String(m.email||'').trim().toLowerCase()){ alert('Email does not match our records'); return; }
+  const code=String(Math.floor(10000+Math.random()*90000));
+  const store=load(KEYS.OTP,{}); store[m.reg.toLowerCase()]={code,expiresAt:Date.now()+10*60*1000}; save(KEYS.OTP,store);
+  showToast('One-time password sent to your email',2200,'success');
+  const entered=prompt('Enter the 5-digit OTP sent to your email (expires in 10 minutes):');
+  if(!entered) return; const current=load(KEYS.OTP,{})[m.reg.toLowerCase()]; if(!current){ alert('OTP not found. Try again.'); return; }
+  if(Date.now()>current.expiresAt){ alert('OTP expired. Try again.'); return; }
+  if(String(entered).trim()!==current.code){ alert('Incorrect OTP'); return; }
+  let np=prompt('Enter new password (min 8, 1 uppercase, 1 number, 1 special):'); if(!np) return;
+  if(!strongPassword(np)){ alert('Weak password — follow requirements'); return; }
+  let np2=prompt('Confirm new password:'); if(!np2) return; if(np2!==np){ alert('Passwords do not match'); return; }
+  m.password=np; save(KEYS.MEMBERS,members);
+  const s=load(KEYS.OTP,{}); delete s[m.reg.toLowerCase()]; save(KEYS.OTP,s);
+  showToast('You have successfully changed your password',2600,'success');
+}
+
+/* ---------- CSV & clear (admin) ---------- */
+function exportCSV(){ const members=load(KEYS.MEMBERS,[]); if(!members.length){ showToast('No members'); return; } const headers=['Reg','Name','Email','Phone','Department','Year','PaymentStatus','CreatedAt']; const rows=members.map(m=>[m.reg,m.name,m.email,m.phone,m.department,m.year,m.paymentStatus||'',m.createdAt||'']); let csv=headers.join(',')+'\n'+rows.map(r=>r.map(c=>`"${String(c||'').replace(/"/g,'""')}"`).join(',')).join('\n'); const blob=new Blob([csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='tassjooust_members.csv'; a.click(); URL.revokeObjectURL(a.href); showToast('CSV exported'); }
+function clearAllMembers(){ if(!confirm('Clear all saved members?')) return; localStorage.removeItem(KEYS.MEMBERS); save(KEYS.MEMBERS,[]); renderAllTables(); renderAllCharts(); showToast('Cleared'); }
+
+/* ---------- charts ---------- */
+ function drawBarChart(canvasId){ const canvas=$(canvasId); if(!canvas) return; const ctx=canvas.getContext('2d'); const DPR=window.devicePixelRatio||1; const W=canvas.clientWidth; const H=canvas.clientHeight; canvas.width=W*DPR; canvas.height=H*DPR; ctx.setTransform(DPR,0,0,DPR,0,0); ctx.clearRect(0,0,W,H); const members=load(KEYS.MEMBERS,[]); const counts={Approved:0,Pending:0,Declined:0,'Not Paid':0}; members.forEach(m=>{ const s=m.paymentStatus||'Not Paid'; if(s==='Pending' || s==='Pending Approval') counts.Pending++; else if(counts[s]!==undefined) counts[s]++; else counts['Not Paid']++; }); const labels=['Approved','Pending','Declined','Not Paid']; const data=[counts.Approved,counts.Pending,counts.Declined,counts['Not Paid']]; const colors=['#28a745','#1e90ff','#000000','#ff3b30']; const maxV=Math.max(1,...data); const padding=24; const barWidth=(W-padding*2)/labels.length*0.6; const gap=((W-padding*2)-(barWidth*labels.length))/(labels.length-1); const baseY=H-36; let start=null; function step(ts){ if(!start) start=ts; const t=Math.min(1,(ts-start)/700); ctx.clearRect(0,0,W,H); for(let i=0;i<labels.length;i++){ const x=padding+i*(barWidth+gap)+barWidth/2; const targetH=(data[i]/maxV)*(H-80); const h=targetH*t; ctx.fillStyle='rgba(0,0,0,0.06)'; ctx.fillRect(x-barWidth/2,baseY-targetH,barWidth,targetH); ctx.fillStyle=colors[i]; ctx.fillRect(x-barWidth/2,baseY-h,barWidth,h); ctx.fillStyle='#222'; ctx.font='700 12px system-ui'; ctx.textAlign='center'; ctx.fillText(String(data[i]),x,baseY-h-8); ctx.fillStyle='rgba(0,0,0,0.6)'; ctx.font='600 12px system-ui'; ctx.fillText(labels[i],x,baseY+18); } ctx.fillStyle='var(--brown-dark)'; ctx.font='700 14px system-ui'; ctx.textAlign='center'; ctx.fillText('Members by status',W/2,18); if(t<1) requestAnimationFrame(step); } requestAnimationFrame(step); }
+function renderAllCharts(){
+  drawBarChart('memberChart'); drawBarChart('adminChart'); drawBarChart('patronChart');
+  drawLineChart('memberLineChart'); drawLineChart('adminLineChart'); drawLineChart('patronLineChart');
+}
+
+// Build cumulative series over the last N days for: Joined, Registered(approved), Renewed(approved), Not Paid
+function computeStatsSeries(days=14){
+  const members=load(KEYS.MEMBERS,[]);
+  const payments=load(KEYS.PAYMENTS,[]);
+  const today=new Date();
+  const fmt=(d)=>{
+    const y=d.getFullYear(); const m=String(d.getMonth()+1).padStart(2,'0'); const dd=String(d.getDate()).padStart(2,'0');
+    return `${y}-${m}-${dd}`;
+  };
+  const range=[]; for(let i=days-1;i>=0;i--){ const d=new Date(today); d.setHours(0,0,0,0); d.setDate(d.getDate()-i); range.push(fmt(d)); }
+  // Pre-index events by day
+  const joinedByDay={}; members.forEach(m=>{ const t=m.createdAt?new Date(m.createdAt):null; if(!t||isNaN(t)) return; t.setHours(0,0,0,0); const k=fmt(t); joinedByDay[k]=(joinedByDay[k]||0)+1; });
+  const regApprovedByDay={}; const renApprovedByDay={};
+  payments.forEach(p=>{ if(p.status==='Approved'){ const t=p.time?new Date(p.time):null; if(!t||isNaN(t)) return; t.setHours(0,0,0,0); const k=fmt(t); if(p.type==='Registration') regApprovedByDay[k]=(regApprovedByDay[k]||0)+1; else if(p.type==='Renewal') renApprovedByDay[k]=(renApprovedByDay[k]||0)+1; } });
+  // cumulative build
+  let cumJoined=0, cumReg=0, cumRen=0; const series={dates:[],joined:[],registered:[],renewed:[],notPaid:[]};
+  for(const day of range){
+    cumJoined += joinedByDay[day]||0;
+    cumReg += regApprovedByDay[day]||0;
+    cumRen += renApprovedByDay[day]||0;
+    const cumNotPaid = Math.max(0, cumJoined - cumReg);
+    series.dates.push(day);
+    series.joined.push(cumJoined);
+    series.registered.push(cumReg);
+    series.renewed.push(cumRen);
+    series.notPaid.push(cumNotPaid);
+  }
+  return series;
+}
+
+function drawLineChart(canvasId){
+  const canvas=$(canvasId); if(!canvas) return;
+  const ctx=canvas.getContext('2d'); const DPR=window.devicePixelRatio||1; const W=canvas.clientWidth; const H=canvas.clientHeight; canvas.width=W*DPR; canvas.height=H*DPR; ctx.setTransform(DPR,0,0,DPR,0,0); ctx.clearRect(0,0,W,H);
+  const s=computeStatsSeries(14);
+  const seriesList=[
+    {name:'Joined', data:s.joined, color:'#6b4b3a'},
+    {name:'Registered', data:s.registered, color:'#28a745'},
+    {name:'Renewed', data:s.renewed, color:'#1e90ff'},
+    {name:'Not Paid', data:s.notPaid, color:'#ff3b30'}
+  ];
+  const allVals=seriesList.flatMap(x=>x.data);
+  const maxV=Math.max(1, ...allVals);
+  const padL=34, padR=10, padT=34, padB=28;
+  const innerW=W-padL-padR, innerH=H-padT-padB;
+  // axes
+  ctx.strokeStyle='rgba(0,0,0,0.15)'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, padT+innerH); ctx.lineTo(padL+innerW, padT+innerH); ctx.stroke();
+  // y ticks
+  const ticks=4; ctx.fillStyle='rgba(0,0,0,0.6)'; ctx.font='600 11px system-ui'; ctx.textAlign='right'; ctx.textBaseline='middle';
+  for(let i=0;i<=ticks;i++){ const v=Math.round((maxV*i)/ticks); const y=padT+innerH - (v/maxV)*innerH; ctx.strokeStyle='rgba(0,0,0,0.08)'; ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(padL+innerW, y); ctx.stroke(); ctx.fillText(String(v), padL-6, y); }
+  // x labels (sparse)
+  ctx.textAlign='center'; ctx.textBaseline='top';
+  const n=s.dates.length; const step=Math.max(1, Math.floor(n/6));
+  for(let i=0;i<n;i+=step){ const x=padL + (i/(n-1))*innerW; const label=s.dates[i].slice(5); ctx.fillText(label, x, padT+innerH+6); }
+  // draw lines
+  const toXY=(i,val)=>({ x: padL + (i/(n-1))*innerW, y: padT+innerH - (val/maxV)*innerH });
+  seriesList.forEach(ser=>{
+    ctx.strokeStyle=ser.color; ctx.lineWidth=2; ctx.beginPath();
+    ser.data.forEach((v,i)=>{ const {x,y}=toXY(i,v); if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); }); ctx.stroke();
+    // points
+    ctx.fillStyle=ser.color; ser.data.forEach((v,i)=>{ const {x,y}=toXY(i,v); ctx.beginPath(); ctx.arc(x,y,2.2,0,Math.PI*2); ctx.fill(); });
+  });
+  // title & legend
+  ctx.fillStyle='var(--brown-dark)'; ctx.font='700 13px system-ui'; ctx.textAlign='center'; ctx.textBaseline='alphabetic'; ctx.fillText('Totals over last 14 days', W/2, 10);
+  // legend just below the title, above the plot area
+  const lgx=padL, lgy=22; let off=0; ctx.font='600 11px system-ui'; ctx.textAlign='left'; ctx.textBaseline='middle';
+  seriesList.forEach(ser=>{ ctx.fillStyle=ser.color; ctx.fillRect(lgx+off, lgy, 10, 3); ctx.fillStyle='rgba(0,0,0,0.7)'; ctx.fillText(' '+ser.name, lgx+off+14, lgy+1); off += ctx.measureText(' '+ser.name).width + 38; });
+}
+
+/* ---------- M-Pesa parser (enhanced) ---------- */
+function parseMpesaText(text, expectedType){
+  const out={raw:text,amount:null,phone:null,date:null,name:null,recipient:null,matched:false,matchedReg:null,valid:null,validationMessage:null,paymentCheck:null};
+  if(!text) return out; const t=String(text);
+  const normalizeName=(s)=> String(s||'').toLowerCase().replace(/[^a-z\s]/g,' ').replace(/\s+/g,' ').trim();
+  // amount (handle Ksh100, Ksh 100.00, KES 100 etc)
+  let m=t.match(/(?:KSH|KES)\s*([0-9]+(?:[\.,][0-9]{1,2})?)/i); if(!m) m=t.match(/Ksh\s*([0-9]+(?:[\.,][0-9]{1,2})?)/i); if(!m) m=t.match(/([0-9]+(?:[\.,][0-9]{1,2})?)\s*(?:shillings|sh|KES|KSH)/i); if(!m) m=t.match(/(?:received|sent|paid).{0,15}?([0-9]+(?:[\.,][0-9]{1,2})?)/i); if(m) out.amount=m[1].replace(/,/g,'').trim();
+  // phone (anywhere in message)
+  let p=t.match(/(\+?2547\d{8})/); if(!p) p=t.match(/(07\d{8})/); if(p) out.phone=p[1];
+  // date
+  let d=t.match(/(\d{1,2}\/\d{1,2}\/\d{2,4})/); if(!d) d=t.match(/(\d{1,2}-\d{1,2}-\d{2,4})/); if(!d) d=t.match(/(\d{4}-\d{1,2}-\d{1,2})/); if(d) out.date=d[1];
+  // recipient (prefer 'to X') allow dots and hyphens and multiple spaces
+  let r=t.match(/(?:\bto\s+|paid to\s+|sent to\s+)([A-Za-z' .-]{2,60})/i); if(r) out.recipient=r[1].trim().replace(/[.,]$/,'');
+  // fallback name parses (sender/etc.)
+  if(!out.recipient){ let n=t.match(/(?:from|sent by|sender|by)\s+([A-Z][A-Za-z' .-]{2,60})/i); if(!n) n=t.match(/([A-Z][A-Za-z' .-]{2,60})\s+confirmed/i); if(!n) n=t.match(/received from\s+([A-Za-z' .-]{2,60})/i); if(n) out.name=n[1].trim(); }
+  if(!out.recipient && !out.name){ const caps=t.match(/\b([A-Z][a-z]{2,})\s+([A-Z][a-z]{2,})\b/); if(caps) out.name=caps[0]; }
+
+  // member match by phone or name (best-effort)
+  const members=load(KEYS.MEMBERS,[]);
+  if(out.phone){ let norm=out.phone.replace(/\s+/g,''); if(norm.startsWith('07')&&norm.length===10){ norm='+254'+norm.slice(1); } for(const mbr of members){ if(mbr.phone && mbr.phone.replace(/\s+/g,'')===norm){ out.matched=true; out.matchedReg=mbr.reg; break; } } }
+  if(!out.matched && out.name){ for(const mbr of members){ if(mbr.name && mbr.name.toLowerCase().includes(out.name.toLowerCase().split(' ')[0])){ out.matched=true; out.matchedReg=mbr.reg; break; } } }
+
+  // payment validation against recipient, recipient phone and amount
+  const expectedRecipient='michael mboya';
+  const expectedRecipientPhoneRaw='0769723853';
+  const expectedRecipientPhoneIntl='+254769723853';
+  const amt = out.amount? Number(out.amount.replace(/,/g,'')) : NaN;
+  const expectAmt = expectedType==='Registration' ? 100 : (expectedType==='Renewal' ? 50 : null);
+  const recNorm = normalizeName(out.recipient||'');
+  const recipientOk = recNorm ? recNorm.includes(expectedRecipient) : false;
+  // consider presence of expected phone anywhere in the text as the recipient phone match
+  const recipientPhoneOk = new RegExp('(?:^|[^0-9])(?:'+expectedRecipientPhoneRaw+'|\\+254769723853)(?:[^0-9]|$)').test(t);
+  const amountOk = expectAmt!=null && !isNaN(amt) ? Math.round(amt)===expectAmt : false;
+  const valid = recipientOk && recipientPhoneOk && amountOk;
+  out.paymentCheck={recipientOk,recipientPhoneOk,amountOk,expectedType:expectedType||null,expectedAmount:expectAmt,expectedRecipient:'Michael Mboya',expectedRecipientPhone:[expectedRecipientPhoneRaw,expectedRecipientPhoneIntl]};
+  out.valid=valid; out.validationMessage = valid ? 'Matched' : 'Invalid payment';
+  return out;
+}
+
+/* ---------- parser UI ---------- */
+function parseMpesaMessage(){ const raw=$('mpesaRaw').value.trim(); if(!raw){ showToast('Paste M-Pesa text'); return; }
+  const outDiv=$('mpesaParseResult');
+  // First, if this message belongs to a saved pending payment, update that record using its stored type
+  let payments=load(KEYS.PAYMENTS,[]);
+  const idx=payments.findIndex(p=>String(p.message||'').trim()===raw);
+  let bound=null; if(idx>-1){ bound=payments[idx]; const parsedForPayment=parseMpesaText(raw, bound.type); payments[idx].parsed=parsedForPayment; save(KEYS.PAYMENTS,payments); renderAllTables(); showToast('Parser result updated for payment',1600, parsedForPayment.valid?'success':'error'); const status=`<div class="inline-status ${parsedForPayment.valid?'good':'bad'}" style="margin-bottom:8px">${parsedForPayment.validationMessage||''} (${bound.type})</div>`; outDiv.classList.add('msg-noedit'); outDiv.innerHTML=status+'<pre style="white-space:pre-wrap;">'+escape(JSON.stringify(parsedForPayment,null,2))+'</pre>'; return; }
+  // Otherwise, show strict validation for both types (no inference)
+  const parsedReg=parseMpesaText(raw, 'Registration');
+  const parsedRen=parseMpesaText(raw, 'Renewal');
+  const s1=`<div class="inline-status ${parsedReg.valid?'good':'bad'}">Registration: ${parsedReg.validationMessage||''}</div>`;
+  const s2=`<div class="inline-status ${parsedRen.valid?'good':'bad'}" style="margin-bottom:8px">Renewal: ${parsedRen.validationMessage||''}</div>`;
+  outDiv.classList.add('msg-noedit');
+  outDiv.innerHTML=s1+s2+'<pre style="white-space:pre-wrap;">'+escape(JSON.stringify({extracted:{amount:parsedReg.amount,phone:parsedReg.phone,date:parsedReg.date,recipient:parsedReg.recipient},checks:{registration:parsedReg.paymentCheck,renewal:parsedRen.paymentCheck}},null,2))+'</pre>';
+  // Lock textarea to prevent edits after parsing
+  const ta=$('mpesaRaw');
+  if(ta){
+    const block=(e)=>{ e && e.preventDefault && e.preventDefault(); const now=Date.now(); if(!ta._lastLockToast || now-ta._lastLockToast>1400){ ta._lastLockToast=now; showToast("Can't edit",1400,'error'); } return false; };
+    ta.readOnly=true; ta.classList.add('parser-locked'); ta._locked=true; ta._lockHandler=block;
+    ['keydown','input','paste','beforeinput','drop'].forEach(evt=>ta.addEventListener(evt,block,true));
+  }
+}
+function clearMpesaParser(){ const ta=$('mpesaRaw'); if(ta){ ta.readOnly=false; ta.classList.remove('parser-locked'); if(ta._lockHandler){ ['keydown','input','paste','beforeinput','drop'].forEach(evt=>ta.removeEventListener(evt,ta._lockHandler,true)); } ta._locked=false; ta._lockHandler=null; ta._lastLockToast=0; } $('mpesaRaw').value=''; const outDiv=$('mpesaParseResult'); if(outDiv){ outDiv.classList.remove('msg-noedit'); } $('mpesaParseResult').innerHTML=''; }
+
+/* ---------- utility ---------- */
+function escape(s){ if(s==null) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function initials(name){ if(!name) return ''; return name.split(' ').map(x=>x[0]||'').slice(0,2).join('').toUpperCase(); }
+function maskEmail(e){ if(!e) return ''; const [user,domain] = String(e).split('@'); if(!domain) return e; const u=user||''; const maskedU = u.length<=2 ? u[0]+'*' : u[0] + '*'.repeat(Math.max(1, u.length-2)) + u.slice(-1); const parts=domain.split('.'); const d0=parts[0]||''; const maskedD0 = d0.length<=2 ? d0[0]+'*' : d0[0] + '*'.repeat(Math.max(1, d0.length-2)) + d0.slice(-1); const maskedDomain = [maskedD0, ...parts.slice(1)].join('.'); return maskedU+'@'+maskedDomain; }
+
+/* ---------- presence (member online indicator) ---------- */
+function updateMemberHeartbeat(reg){ if(!reg) return; const key='tass_presence'; const data=load(key,{}); data[String(reg).toLowerCase()] = Date.now(); save(key,data); }
+function getMemberLastSeen(reg){ if(!reg) return 0; const key='tass_presence'; const data=load(key,{}); return data[String(reg).toLowerCase()]||0; }
+function isMemberOnline(reg){ const ts=getMemberLastSeen(reg); return ts && (Date.now()-ts)<60000; }
+function timeAgo(ts){ if(!ts) return 'never'; const diff=Math.max(0,Date.now()-ts); const s=Math.floor(diff/1000); if(s<60) return s+`s ago`; const m=Math.floor(s/60); if(m<60) return m+`m ago`; const h=Math.floor(m/60); if(h<24) return h+`h ago`; const d=Math.floor(h/24); return d+`d ago`; }
+function renderMemberPresence(reg){ const el=$('memberPresence'); if(!el) return; const s=getSession();
+  // Do not show presence indicator to the same user on their own dashboard
+  if(s && s.role==='member' && s.user && reg && s.user.toLowerCase()===String(reg).toLowerCase()){ el.innerHTML=''; return; }
+  if(!reg){ el.innerHTML=''; return; }
+  if(isMemberOnline(reg)){ el.innerHTML='<span class="presence-chip presence-online">Online</span>'; }
+  else { const last=getMemberLastSeen(reg); el.innerHTML=`<span class=\"presence-chip presence-offline\">Last seen ${escape(timeAgo(last))}</span>`; }
+}
+
+/* ---------- member restrictions ---------- */
+function restrictMemberPrivileges(){ const s=getSession(); if(s && s.role==='member'){ const blocked=['adminAddMember','adminApproveMember','adminDeclineMember','adminRemoveMember','adminResetPassword','adminApprovePayment','adminDeclinePayment','exportCSV','clearAllMembers']; blocked.forEach(fn=>{ if(window[fn] && typeof window[fn]==='function'){ window[fn]=()=>showToast('Access denied — admin only'); } else { window[fn]=()=>showToast('Access denied — admin only'); } }); } }
+
+/* ---------- helpers: quick lists, charts, chats ---------- */
+function renderQuickLists(){ renderMemberQuick(); renderPatronQuick(); renderMembersListOnHome(); }
+
+/* ---------- startup ---------- */
+init();
+</script>
+</body>
+</html>

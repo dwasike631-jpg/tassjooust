@@ -1,0 +1,1333 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>TASSJOOUST Club — Full System</title>
+
+<!--
+  Note: This file embeds the provided logo as base64 below.
+  If you prefer to use another logo, replace the data URI in the `logoData` variable in the script.
+-->
+
+<style>
+:root{
+  --brown:#4B2E05;
+  --brown-dark:#3b2303;
+  --orange:#F28C28;
+  --orange-dark:#d36f00;
+  --cream:#FFF8E7;
+  --card:#fffaf5;
+  --radius:12px;
+  --maxw:1150px;
+}
+*{box-sizing:border-box;font-family:Inter,system-ui,Arial,sans-serif}
+html,body{height:100%;margin:0;background:linear-gradient(120deg,var(--brown),var(--orange));-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;color:#222}
+.app{max-width:var(--maxw);margin:20px auto;background:var(--card);border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.18);border:1px solid rgba(0,0,0,0.06)}
+.header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:transparent}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:72px;height:72px;border-radius:10px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.18);background:linear-gradient(135deg,var(--brown),var(--orange))}
+.logo img{width:100%;height:100%;object-fit:contain;display:block}
+.title{font-weight:800;font-size:1.05rem;color:var(--brown-dark)}
+.top-actions{display:flex;gap:8px;align-items:center}
+
+/* Buttons */
+.btn{border:0;padding:9px 14px;border-radius:10px;background:linear-gradient(90deg,var(--orange),#ffb85b);color:#fff;font-weight:700;cursor:pointer;box-shadow:0 8px 18px rgba(242,140,40,0.12);transition:transform .16s,opacity .16s}
+.btn:hover{transform:translateY(-2px)}
+.btn.ghost{background:transparent;color:var(--brown);border:1px solid rgba(75,46,5,0.08);box-shadow:none}
+.btn.small{padding:6px 10px;font-size:0.92rem;border-radius:8px}
+
+/* layout */
+.container{display:flex;gap:18px;padding:18px}
+@media(max-width:980px){ .container{flex-direction:column} }
+.left{flex:1}
+.right{width:360px;min-width:260px}
+
+/* cards and forms */
+.card{background:linear-gradient(180deg,#fff,#fffaf5);padding:14px;border-radius:12px;border:1px solid rgba(0,0,0,0.04);margin-bottom:14px}
+.h3{margin:0 0 8px 0;font-size:1.02rem}
+.small{font-size:0.95rem;color:#555}
+.muted{color:#666;font-size:0.9rem}
+
+/* auth UI */
+.tabs{display:flex;gap:8px;margin-bottom:12px}
+.tab{padding:8px 12px;border-radius:999px;cursor:pointer;border:1px solid rgba(75,46,5,0.04);background:transparent}
+.tab.active{background:linear-gradient(90deg,var(--orange),#ffb85b);color:#fff;font-weight:800}
+
+/* form controls */
+.input,textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(75,46,5,0.06);background:#fff;font-size:0.95rem}
+textarea{min-height:100px;resize:vertical}
+
+/* chat */
+.chat-box{background:rgba(255,255,255,0.95);padding:12px;border-radius:10px;height:260px;overflow:auto;display:flex;flex-direction:column;gap:8px}
+.bubble{display:inline-block;padding:10px 12px;border-radius:16px;max-width:78%;word-wrap:break-word}
+.bubble.me{background:linear-gradient(90deg,var(--orange),#ffc77a);color:var(--brown);align-self:flex-end;margin-left:auto}
+.bubble.admin{background:rgba(75,46,5,0.06);color:#222;align-self:flex-start}
+.bubble.patron{background:linear-gradient(90deg,#ffe9b8,var(--orange));color:var(--brown);align-self:flex-start}
+.typing{font-weight:700;color:var(--orange);margin-top:6px;font-size:0.92rem}
+
+/* tables */
+table{width:100%;border-collapse:collapse}
+th,td{padding:8px;border-bottom:1px solid rgba(75,46,5,0.04);font-size:0.92rem;text-align:left}
+th{background:rgba(75,46,5,0.02)}
+
+/* gallery & modals */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:9998}
+.modal.show{display:flex}
+.modal-content{background:#fff;color:#111;padding:18px;border-radius:12px;max-width:820px;width:94%}
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:8px;margin-top:12px}
+.thumb{width:100%;height:72px;object-fit:cover;border-radius:8px;border:2px solid rgba(0,0,0,0.06);cursor:pointer}
+.thumb.selected{outline:3px solid var(--orange)}
+
+/* chart */
+.chart-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;padding:8px}
+canvas.bar-chart{width:100%;height:160px;border-radius:8px;background:transparent}
+
+/* toast */
+.toast{position:fixed;right:18px;bottom:18px;background:var(--brown-dark);color:#fff;padding:10px 14px;border-radius:10px;box-shadow:0 8px 24px rgba(75,46,5,0.2);z-index:1200;opacity:0;transform:translateY(8px);transition:all 220ms}
+.toast.show{opacity:1;transform:translateY(0)}
+
+/* footer tagline that appears when scrolled to bottom */
+.footer-tagline{position:fixed;left:0;right:0;bottom:-80px;background:rgba(75,30,10,0.92);color:var(--cream);text-align:center;padding:12px 8px;font-style:italic;box-shadow:0 -6px 20px rgba(0,0,0,0.25);transition:bottom .6s,opacity .6s;opacity:0;z-index:1200}
+.footer-tagline.show{bottom:0;opacity:1}
+
+/* small responsiveness tweaks */
+@media(max-width:520px){ .right{width:100%} .logo{width:56px;height:56px} .title{font-size:0.95rem} }
+</style>
+</head>
+<body>
+  <!-- Loader (2 seconds) -->
+  <div id="mainLoader" style="position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--brown),var(--orange));z-index:99999;color:#fff">
+    <div style="width:140px;height:140px;border-radius:14px;overflow:hidden;box-shadow:0 14px 50px rgba(0,0,0,0.4);margin-bottom:14px">
+      <img id="loaderLogo" src="" alt="logo" style="width:100%;height:100%;object-fit:contain;display:block">
+    </div>
+    <div style="width:64px;height:64px;border-radius:50%;border:8px solid rgba(255,255,255,0.12);border-top-color:#fff;animation:spin 1s linear infinite;margin-bottom:12px"></div>
+    <div style="font-weight:800">Loading TASSJOOUST…</div>
+  </div>
+
+  <div class="app" id="app" style="display:none" role="application" aria-labelledby="appTitle">
+    <header class="header">
+      <div class="brand">
+        <div class="logo" title="TASSJOOUST logo"><img id="headerLogo" src="" alt="TASSJOOUST logo"></div>
+        <div>
+          <div class="title" id="appTitle">TASSJOOUST Club</div>
+          <div class="small">Student registration & member management</div>
+        </div>
+      </div>
+
+      <div class="top-actions" role="navigation" aria-label="top actions">
+        <button class="btn small" onclick="goHome()">Home</button>
+        <button id="navMember" class="btn ghost small">Member</button>
+        <button id="navAdmin" class="btn ghost small">Admin</button>
+        <button id="navPatron" class="btn ghost small">Patron</button>
+      </div>
+    </header>
+
+    <main class="container" id="mainContainer">
+      <!-- LEFT: Home / Auth panels -->
+      <section class="left">
+        <div class="card" id="homeCard">
+          <div style="display:flex;gap:12px;align-items:center">
+            <div style="width:120px;height:120px;border-radius:12px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.12)"><img id="homeLogo" src="" alt="logo" style="width:100%;height:100%;object-fit:contain"></div>
+            <div>
+              <h2 style="margin:0">Welcome to TASSJOOUST Club</h2>
+              <p class="small">MAKE SURE YOU ARE A STUDENT OF SBPMAS TO REGISTER. Username = Registration number.</p>
+            </div>
+          </div>
+          <div id="homeTag" style="text-align:center;margin-top:10px;font-style:italic;color:var(--brown-dark);opacity:0;transition:opacity .6s,transform .6s;">&ldquo;Risk it and be an Actuary&rdquo;</div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <div class="tabs" role="tablist" aria-label="Auth tabs">
+            <div id="tabSignUp" class="tab active" role="tab">Sign Up</div>
+            <div id="tabSignIn" class="tab" role="tab">Sign In</div>
+          </div>
+
+          <div id="signUpPanel">
+            <form id="signupForm" onsubmit="event.preventDefault(); memberSignUp();">
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <input id="suName" class="input" placeholder="Full name" required>
+                <input id="suReg" class="input" placeholder="Registration number (username)" required>
+              </div>
+              <div style="display:flex;gap:8px;margin-top:8px">
+                <input id="suEmail" class="input" placeholder="Email address" required>
+                <input id="suPhone" class="input" placeholder="Phone number (+2547...)" required>
+              </div>
+              <div style="display:flex;gap:8px;margin-top:8px">
+                <input id="suDept" class="input" placeholder="Department (optional)">
+                <select id="suYear" class="input">
+                  <option value="">Year</option><option>1</option><option>2</option><option>3</option><option>4</option><option>Other</option>
+                </select>
+              </div>
+              <div style="margin-top:8px">
+                <input id="suPass" class="input" type="password" placeholder="Password (min 8, 1 uppercase, 1 number, 1 special)" required>
+              </div>
+              <div style="display:flex;gap:8px;margin-top:10px;align-items:center">
+                <button class="btn" type="submit">Create account</button>
+                <button class="btn ghost" type="button" onclick="document.getElementById('signupForm').reset()">Clear</button>
+                <div class="muted" style="margin-left:auto">Registration fee: <strong>Ksh 100</strong></div>
+              </div>
+              <div id="suMsg" style="margin-top:8px"></div>
+            </form>
+          </div>
+
+          <div id="signInPanel" style="display:none">
+            <div style="display:flex;gap:8px">
+              <input id="siReg" class="input" placeholder="Registration number">
+              <input id="siPass" class="input" type="password" placeholder="Password">
+            </div>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button class="btn" onclick="memberSignIn()">Member Sign In</button>
+              <button class="btn ghost" onclick="adminSignIn()">Admin Sign In</button>
+              <button class="btn ghost" onclick="patronSignIn()">Patron Sign In</button>
+            </div>
+            <div style="margin-top:8px">
+              <button class="btn ghost" onclick="memberForgot()">Forgot Password</button>
+            </div>
+            <div id="siMsg" style="margin-top:8px"></div>
+          </div>
+        </div>
+
+        <!-- MPESA modal (hidden) -->
+        <div id="mpesaModal" class="modal" role="dialog" aria-hidden="true">
+          <div class="modal-content">
+            <h3 id="mpesaModalTitle">Paste your M-Pesa message</h3>
+            <p class="muted">Copy the full SMS confirmation you received and paste it below. Finance Director will review and approve.</p>
+            <textarea id="mpesaMessage" class="input" placeholder="M-Pesa SMS..."></textarea>
+            <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px">
+              <button class="btn" onclick="submitMpesa()">Send to Admin</button>
+              <button class="btn ghost" onclick="closeMpesaModal()">Cancel</button>
+            </div>
+            <div id="mpesaModalStatus" style="margin-top:8px"></div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- RIGHT: quick info, sign-ins for Admin/Patron -->
+      <aside class="right">
+        <div class="card">
+          <h3 class="h3">Quick actions</h3>
+          <p class="small">Register: <strong>Ksh 100</strong> | Renewal: <strong>Ksh 50</strong></p>
+          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+            <button class="btn" onclick="switchTo('signUp')">Member Sign Up</button>
+            <button class="btn" onclick="switchTo('signIn')">Member Sign In</button>
+          </div>
+          <hr style="margin:12px 0;border:none;border-top:1px solid rgba(75,46,5,0.04)">
+          <div style="display:flex;gap:8px">
+            <button class="btn ghost" onclick="adminSignIn()">Finance Director Sign In</button>
+            <button class="btn ghost" onclick="patronSignIn()">Patron Sign In</button>
+          </div>
+          <div style="margin-top:10px" class="muted">Admin: <strong>admin</strong> / <strong>admin1234@2025</strong><br>Patron: <strong>patron</strong> / <strong>patron1234@2025</strong></div>
+        </div>
+
+        <div class="card">
+          <h3 class="h3">Info</h3>
+          <p class="muted">This system stores member data locally in your browser (localStorage). Export CSV / PDF from Admin Dashboard.</p>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Dashboards area (hidden until sign-in) -->
+    <section id="dashboards" style="display:none;padding:18px">
+      <!-- MEMBER -->
+      <div id="memberDashboard" class="card" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+          <div style="display:flex;gap:12px;align-items:center">
+            <div class="logo" style="width:64px;height:64px"><img id="memberLogo" src="" alt="logo"></div>
+            <div>
+              <div id="memberGreeting" style="font-weight:800">Hi! Member</div>
+              <div class="muted" id="memberTime"></div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input id="memberPhotoInput" type="file" accept="image/*" style="display:none">
+            <img id="memberPhoto" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:3px solid rgba(0,0,0,0.06);cursor:pointer" title="Click to change profile">
+            <div>
+              <button class="btn" onclick="logout()">Logout</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+          <div style="flex:1;min-width:300px">
+            <div class="card">
+              <h3 class="h3">Membership & Payment</h3>
+              <p class="small">Registration: Ksh 100 | Renewal: Ksh 50</p>
+              <p id="memberPaymentStatus" class="small muted">Status: Not Paid</p>
+              <div style="display:flex;gap:8px;margin-top:8px">
+                <button class="btn" onclick="openMpesa('Registration',100)">Register (Ksh 100)</button>
+                <button class="btn" onclick="openMpesa('Renewal',50)">Renew (Ksh 50)</button>
+                <button class="btn ghost" onclick="openChangePassword()">Change password</button>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:12px">
+              <h3 class="h3">Your Account</h3>
+              <div class="small">Registration number: <strong id="memberReg"></strong></div>
+              <div class="small">Email: <strong id="memberEmail"></strong></div>
+              <div style="margin-top:8px">
+                <button class="btn ghost" onclick="goHome()">Back to Home</button>
+              </div>
+            </div>
+          </div>
+
+          <div style="width:420px;min-width:260px">
+            <div class="card">
+              <h3 class="h3">Club Chat</h3>
+              <div id="chatMemberBox" class="chat-box"></div>
+              <div style="display:flex;gap:8px;margin-top:8px">
+                <input id="chatMemberIn" class="input" placeholder="Type a message..." oninput="typing('member')" onkeypress="if(event.key==='Enter') sendChat('member')">
+                <button class="btn small" onclick="sendChat('member')">Send</button>
+              </div>
+              <div id="typingMember" class="typing"></div>
+            </div>
+
+            <div class="card chart-wrap" style="margin-top:12px">
+              <h3 class="h3" style="margin:0">Club statistics</h3>
+              <canvas id="memberChart" class="bar-chart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADMIN -->
+      <div id="adminDashboard" class="card" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="display:flex;gap:12px;align-items:center">
+            <div class="logo" style="width:64px;height:64px"><img id="adminLogo" src="" alt="logo"></div>
+            <div>
+              <div id="adminGreeting" style="font-weight:800">Hi! Finance Director</div>
+              <div class="muted" id="adminTime"></div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:8px;align-items:center">
+            <input id="adminPhotoInput" type="file" accept="image/*" style="display:none">
+            <img id="adminPhoto" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:3px solid rgba(0,0,0,0.06);cursor:pointer" title="Click to change profile">
+            <div style="display:flex;gap:8px">
+              <button class="btn" onclick="logout()">Logout</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <div style="display:flex;gap:8px;margin-bottom:12px">
+            <button class="btn ghost small" onclick="switchAdminTab('members')">Members</button>
+            <button class="btn ghost small" onclick="switchAdminTab('payments')">Pending Payments</button>
+            <button class="btn ghost small" onclick="switchAdminTab('parser')">M-Pesa Parser</button>
+          </div>
+
+          <!-- Members -->
+          <div id="adminTabMembers" class="card">
+            <h3 class="h3">All Members</h3>
+            <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap">
+              <input id="adminAddReg" class="input" placeholder="Reg number" style="max-width:140px">
+              <input id="adminAddName" class="input" placeholder="Full name" style="max-width:200px">
+              <input id="adminAddEmail" class="input" placeholder="Email" style="max-width:220px">
+              <input id="adminAddPass" class="input" placeholder="Password" style="max-width:160px">
+              <button class="btn" onclick="adminAddMember()">Add member</button>
+              <button class="btn ghost" onclick="exportCSV()">Export CSV</button>
+              <button class="btn" onclick="exportPDF()">Export PDF</button>
+              <button class="btn warn" onclick="adminResetSystem()">Reset System</button>
+            </div>
+            <div style="overflow:auto;max-height:320px">
+              <table id="adminMembersTable"></table>
+            </div>
+          </div>
+
+          <!-- Payments -->
+          <div id="adminTabPayments" class="card" style="display:none;margin-top:12px">
+            <h3 class="h3">Pending Payments (M-Pesa messages)</h3>
+            <div style="overflow:auto;max-height:380px">
+              <table id="adminPaymentsTable"></table>
+            </div>
+          </div>
+
+          <!-- Parser -->
+          <div id="adminTabParser" class="card" style="display:none;margin-top:12px">
+            <h3 class="h3">M-Pesa Message Parser</h3>
+            <p class="muted">Paste raw M-Pesa SMS and click Parse. Aggressive fuzzy-matching will attempt to verify the sender.</p>
+            <textarea id="mpesaRaw" class="input" placeholder="Paste M-Pesa SMS here..."></textarea>
+            <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
+              <button class="btn" onclick="parseMpesaMessage()">Parse</button>
+              <button class="btn ghost" onclick="clearMpesaParser()">Clear</button>
+            </div>
+            <div id="mpesaParseResult" style="margin-top:12px"></div>
+          </div>
+
+          <div class="card" style="margin-top:12px">
+            <h3 class="h3">Chat</h3>
+            <div id="chatAdminBox" class="chat-box"></div>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <input id="chatAdminIn" class="input" placeholder="Type a message..." oninput="typing('admin')" onkeypress="if(event.key==='Enter') sendChat('admin')">
+              <button class="btn small" onclick="sendChat('admin')">Send</button>
+            </div>
+            <div id="typingAdmin" class="typing"></div>
+          </div>
+
+          <div class="card chart-wrap" style="margin-top:12px">
+            <h3 class="h3" style="margin:0">Club statistics</h3>
+            <canvas id="adminChart" class="bar-chart"></canvas>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- PATRON -->
+      <div id="patronDashboard" class="card" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="display:flex;gap:12px;align-items:center">
+            <div class="logo" style="width:64px;height:64px"><img id="patronLogo" src="" alt="logo"></div>
+            <div>
+              <div id="patronGreeting" style="font-weight:800">Hi! Patron</div>
+              <div class="muted" id="patronTime"></div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input id="patronPhotoInput" type="file" accept="image/*" style="display:none">
+            <img id="patronPhoto" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:3px solid rgba(0,0,0,0.06);cursor:pointer" title="Click to change profile">
+            <div style="display:flex;gap:8px">
+              <button class="btn" onclick="logout()">Logout</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+          <div style="flex:1;min-width:320px">
+            <div class="card">
+              <h3 class="h3">Members (visible to patron)</h3>
+              <div style="overflow:auto;max-height:340px">
+                <table id="patronMembersTable"></table>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:12px">
+              <h3 class="h3">Chat</h3>
+              <div id="chatPatronBox" class="chat-box"></div>
+              <div style="display:flex;gap:8px;margin-top:8px">
+                <input id="chatPatronIn" class="input" placeholder="Type a message..." oninput="typing('patron')" onkeypress="if(event.key==='Enter') sendChat('patron')">
+                <button class="btn small" onclick="sendChat('patron')">Send</button>
+              </div>
+              <div id="typingPatron" class="typing"></div>
+            </div>
+          </div>
+
+          <aside style="width:360px;min-width:260px;display:flex;flex-direction:column;gap:12px">
+            <div class="card chart-wrap">
+              <h3 class="h3" style="margin:0">Club statistics</h3>
+              <canvas id="patronChart" class="bar-chart"></canvas>
+            </div>
+
+            <div class="card">
+              <h3 class="h3">Quick members</h3>
+              <div id="patronQuick"></div>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+    </section>
+
+    <footer style="padding:14px 18px;background:transparent;display:flex;justify-content:space-between;align-items:center">
+      <div class="muted">© TASSJOOUST Club</div>
+      <div class="muted">Built for SBPMAS students</div>
+    </footer>
+  </div>
+
+  <!-- Gallery modal for profile selection -->
+  <div id="galleryModal" class="modal" role="dialog" aria-hidden="true">
+    <div class="modal-content">
+      <h3>Select profile image</h3>
+      <p class="muted">Upload or choose an existing image for the selected role.</p>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+        <input id="galleryUpload" type="file" accept="image/*">
+        <div style="margin-left:auto"><button class="btn" id="gallerySetBtn">Set as profile</button><button class="btn ghost" id="galleryCloseBtn">Close</button></div>
+      </div>
+      <div id="galleryGrid" class="gallery-grid"></div>
+    </div>
+  </div>
+
+  <!-- Password modal -->
+  <div id="pwModal" class="modal" role="dialog" aria-hidden="true">
+    <div class="modal-content">
+      <h3>Change Password</h3>
+      <label class="muted">Current password</label>
+      <input id="oldPassword" class="input" type="password">
+      <label class="muted" style="margin-top:8px">New password</label>
+      <input id="newPassword" class="input" type="password">
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px">
+        <button class="btn" onclick="confirmChangePassword()">Confirm</button>
+        <button class="btn ghost" onclick="closePwModal()">Cancel</button>
+      </div>
+      <div id="pwModalStatus" style="margin-top:8px"></div>
+    </div>
+  </div>
+
+  <!-- MPESA receipt upload modal for admin to attach receipt to payment -->
+  <div id="receiptModal" class="modal" role="dialog" aria-hidden="true">
+    <div class="modal-content">
+      <h3>Attach receipt to payment</h3>
+      <p class="muted">Upload a receipt image (PNG/JPG) or PDF which will be stored locally and attached to this payment record.</p>
+      <input id="receiptUpload" type="file" accept="image/*,application/pdf">
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+        <button class="btn" id="receiptAttachBtn">Attach</button>
+        <button class="btn ghost" onclick="closeReceiptModal()">Close</button>
+      </div>
+      <div id="receiptStatus" style="margin-top:8px"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" aria-hidden="true"></div>
+  <div id="footerTag" class="footer-tagline">&ldquo;Risk it and be an Actuary&rdquo;</div>
+
+<script>
+/* ----------------------
+   SINGLE-FILE TASSJOOUST SYSTEM
+   All data stored in localStorage for local and GitHub Pages hosting.
+   ---------------------- */
+
+const KEYS = {
+  MEMBERS: 'tass_members_final_v2',
+  PAYMENTS: 'tass_payments_final_v2',
+  CHAT: 'tass_chat_final_v2',
+  PHOTOS: 'tass_photos_final_v2',
+  SESSION: 'tass_session_final_v2',
+  TYPING: 'tass_typing_final_v2'
+};
+
+// Replace this data URI with your uploaded image's base64 if you need to swap.
+// The file you uploaded in the conversation has been embedded in the HTML by the assistant.
+// If you host this file yourself, ensure the data URI below is your logo.
+let logoData = ""; // will be initialized from embedded fallback below
+
+// Fallback: the assistant originally embedded the uploaded PNG as base64 in files served locally.
+// If you want to update, set logoData = "data:image/png;base64,....";
+(function embedLogoFallback(){
+  // If empty, try to pick up an embedded <img id="homeLogo"> src later; we'll set in init.
+  // You can replace this string with a base64 data URI for the logo if desired.
+  logoData = "";
+})();
+
+/* Helper shortcuts */
+const $ = id => document.getElementById(id);
+const uid = () => 'id_' + Date.now() + '_' + Math.floor(Math.random()*9000);
+const nowISO = () => new Date().toISOString();
+const nowTime = () => new Date().toLocaleString();
+
+function save(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
+function load(k,def=null){ try{ const s = localStorage.getItem(k); return s ? JSON.parse(s) : def; } catch(e){ return def; } }
+
+function showToast(msg, t=2500){ const el = $('toast'); el.textContent = msg; el.classList.add('show'); el.setAttribute('aria-hidden','false'); clearTimeout(el._t); el._t = setTimeout(()=>{ el.classList.remove('show'); el.setAttribute('aria-hidden','true'); }, t); }
+
+/* ---------- Utility validators ---------- */
+function validEmail(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
+function strongPassword(p){ return /^(?=.*[A-Z])(?=.*\d)(?=.*\W).{8,}$/.test(p); }
+function isPhone(p){ return /^\+?\d{7,15}$/.test(String(p||'').trim()); }
+
+/* ---------- Setup defaults ---------- */
+const DEFAULTS = {
+  admin: { username: 'admin', password: 'admin1234@2025' },
+  patron: { username: 'patron', password: 'patron1234@2025' },
+  mpesaNumber: '+254769723853'
+};
+
+/* ---------- Loader & logo wiring ---------- */
+function initUI(){
+  // If the logo img elements have empty src, attempt to use embedded logoData or fallback to built-in emoji
+  const fallbackSVG = encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='100%' height='100%' fill='%23F28C28'/><text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='80' fill='%234B2E05' font-weight='700'>TJ</text></svg>`);
+  const dataURI = logoData || ('data:image/svg+xml;utf8,' + fallbackSVG);
+
+  ['loaderLogo','homeLogo','headerLogo','memberLogo','adminLogo','patronLogo','memberPhoto','adminPhoto','patronPhoto','headerLogo'].forEach(id=>{
+    const el = $(id);
+    if(el && (!el.src || el.src==='')) el.src = dataURI;
+  });
+
+  // loader -> after 2s show app
+  setTimeout(()=>{ $('mainLoader').style.display='none'; $('app').style.display='block'; fadeHomeTagline(); renderTime(); setInterval(renderTime,1000); initialSessionCheck(); applyPhotosToUI(); renderAllCharts(); }, 2000);
+}
+
+/* ---------- Time ---------- */
+function renderTime(){ const t = nowTime(); ['memberTime','adminTime','patronTime'].forEach(id=>{ const el=$(id); if(el) el.textContent = t; }); }
+
+/* ---------- Storage initialization ---------- */
+function ensureStorage(){
+  if(!localStorage.getItem(KEYS.MEMBERS)) save(KEYS.MEMBERS, []);
+  if(!localStorage.getItem(KEYS.PAYMENTS)) save(KEYS.PAYMENTS, []);
+  if(!localStorage.getItem(KEYS.CHAT)) save(KEYS.CHAT, []);
+  if(!localStorage.getItem(KEYS.PHOTOS)) save(KEYS.PHOTOS, {});
+  if(!localStorage.getItem(KEYS.TYPING)) save(KEYS.TYPING, {});
+}
+
+/* ---------- Auth UI switching ---------- */
+$('tabSignUp').addEventListener('click', ()=>{ setAuthTab('signup'); });
+$('tabSignIn').addEventListener('click', ()=>{ setAuthTab('signin'); });
+function setAuthTab(t){
+  document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));
+  if(t==='signup'){ $('tabSignUp').classList.add('active'); $('signUpPanel').style.display='block'; $('signInPanel').style.display='none'; }
+  else{ $('tabSignIn').classList.add('active'); $('signUpPanel').style.display='none'; $('signInPanel').style.display='block'; }
+}
+
+/* ---------- Member sign up / sign in ---------- */
+function memberSignUp(){
+  const name = $('suName').value.trim();
+  const reg = $('suReg').value.trim();
+  const email = $('suEmail').value.trim();
+  const phone = $('suPhone').value.trim();
+  const dept = $('suDept').value.trim();
+  const year = $('suYear').value;
+  const pass = $('suPass').value;
+
+  if(!name||!reg||!email||!phone||!pass){ $('suMsg').textContent='Please fill all required fields'; return; }
+  if(!validEmail(email)){ $('suMsg').textContent='Invalid email'; return; }
+  if(!isPhone(phone)){ $('suMsg').textContent='Invalid phone'; return; }
+  if(!strongPassword(pass)){ $('suMsg').textContent='Weak password: min 8 chars, 1 uppercase, 1 number, 1 special'; return; }
+
+  const members = load(KEYS.MEMBERS, []);
+  if(members.find(m=>m.reg.toLowerCase()===reg.toLowerCase())){ $('suMsg').textContent='Registration number already exists'; return; }
+  if(members.find(m=>m.email.toLowerCase()===email.toLowerCase())){ $('suMsg').textContent='Email already registered'; return; }
+
+  members.push({ id: uid(), name, reg, email, phone, department: dept, year, password: pass, paymentStatus:'Not Paid', createdAt: nowISO() });
+  save(KEYS.MEMBERS, members);
+  $('suMsg').textContent = 'Account created. Please sign in.';
+  showToast('Account created — sign in now');
+  $('signupForm').reset();
+  renderAllTables(); renderAllCharts();
+}
+
+function memberSignIn(){
+  const reg = $('siReg').value.trim();
+  const pass = $('siPass').value;
+  const msg = $('siMsg'); msg.textContent='';
+
+  if(!reg||!pass){ msg.textContent='Fill both fields.'; return; }
+  const members = load(KEYS.MEMBERS, []);
+  const m = members.find(x=>x.reg.toLowerCase()===reg.toLowerCase());
+  if(!m || m.password !== pass){ msg.textContent='Invalid credentials.'; return; }
+  save(KEYS.SESSION, { role:'member', user: m.reg });
+  showToast('You have successfully logged in');
+  openDashboardWithLoader('member');
+}
+
+/* admin & patron sign in (via prompt or modal) */
+function adminSignIn(){
+  const user = prompt('Admin username:', DEFAULTS.admin.username);
+  if(user===null) return;
+  const pass = prompt('Admin password:','');
+  if(pass===null) return;
+  if(user === DEFAULTS.admin.username && pass === DEFAULTS.admin.password){
+    save(KEYS.SESSION, { role:'admin', user:'admin' });
+    showToast('You have successfully logged in');
+    openDashboardWithLoader('admin');
+  } else {
+    alert('Invalid admin credentials');
+  }
+}
+function patronSignIn(){
+  const user = prompt('Patron username:', DEFAULTS.patron.username);
+  if(user===null) return;
+  const pass = prompt('Patron password:','');
+  if(pass===null) return;
+  if(user === DEFAULTS.patron.username && pass === DEFAULTS.patron.password){
+    save(KEYS.SESSION, { role:'patron', user:'patron' });
+    showToast('You have successfully logged in');
+    openDashboardWithLoader('patron');
+  } else {
+    alert('Invalid patron credentials');
+  }
+}
+
+/* Forgot password (create admin-visible request) */
+function memberForgot(){
+  const reg = prompt('Enter your registration number for password reset:');
+  if(!reg) return;
+  const members = load(KEYS.MEMBERS, []);
+  const m = members.find(x=>x.reg.toLowerCase()===reg.toLowerCase());
+  if(!m){ alert('Registration not found'); return; }
+  const payments = load(KEYS.PAYMENTS, []);
+  payments.push({ id: uid(), reg: m.reg, type: 'PasswordResetRequest', message: 'Member requests password reset', status: 'Pending', time: nowISO() });
+  save(KEYS.PAYMENTS, payments);
+  alert('Password reset request sent to Finance Director (simulated). Admin will reset and provide temp password.');
+  renderAllTables();
+}
+
+/* ---------- Dashboard opening & loader ---------- */
+function openDashboardWithLoader(role){
+  $('mpesaModal').classList.remove('show'); // ensure closed
+  document.getElementById('mainLoader').style.display='flex';
+  setTimeout(()=>{ document.getElementById('mainLoader').style.display='none'; openDashboard(role); }, 2000);
+}
+
+function openDashboard(role){
+  $('homeCard').style.display='none';
+  $('dashboards').style.display='block';
+  $('memberDashboard').style.display='none';
+  $('adminDashboard').style.display='none';
+  $('patronDashboard').style.display='none';
+  if(role==='member'){ $('memberDashboard').style.display='block'; initializeMemberDashboard(); }
+  if(role==='admin'){ $('adminDashboard').style.display='block'; initializeAdminDashboard(); }
+  if(role==='patron'){ $('patronDashboard').style.display='block'; initializePatronDashboard(); }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ---------- Logout ---------- */
+function logout(){
+  if(!confirm('Log out?')) return;
+  clearSession();
+  showToast('You have successfully logged out');
+  setTimeout(()=>{ location.reload(); }, 700);
+}
+function clearSession(){ localStorage.removeItem(KEYS.SESSION); }
+
+/* ---------- Photos & gallery ---------- */
+function applyPhotosToUI(){
+  const photos = load(KEYS.PHOTOS, {});
+  const s = load(KEYS.SESSION, null);
+  if(s && s.role==='member'){ const mem = load(KEYS.MEMBERS,[]).find(m=>m.reg.toLowerCase()===s.user.toLowerCase()); if(mem){ $('memberPhoto').src = photos[mem.reg] || photos['logo'] || $('homeLogo').src; } }
+  $('adminPhoto').src = photos['admin'] || photos['logo'] || $('homeLogo').src;
+  $('patronPhoto').src = photos['patron'] || photos['logo'] || $('homeLogo').src;
+}
+
+/* upload photo */
+function uploadPhotoHandler(e, key){
+  const f = e.target.files ? e.target.files[0] : null;
+  if(!f) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const photos = load(KEYS.PHOTOS, {});
+    photos[key] = ev.target.result;
+    save(KEYS.PHOTOS, photos);
+    applyPhotosToUI(); showToast('Profile image saved');
+    renderAllTables();
+  };
+  reader.readAsDataURL(f);
+}
+$('memberPhotoInput').addEventListener('change', e => { const s = load(KEYS.SESSION, null); if(!s || s.role!=='member'){ alert('Sign in as member to change profile'); return; } uploadPhotoHandler(e, s.user); });
+$('adminPhotoInput').addEventListener('change', e => uploadPhotoHandler(e, 'admin'));
+$('patronPhotoInput').addEventListener('change', e => uploadPhotoHandler(e, 'patron'));
+document.getElementById('memberPhoto').addEventListener('click', ()=> $('memberPhotoInput').click());
+document.getElementById('adminPhoto').addEventListener('click', ()=> $('adminPhotoInput').click());
+document.getElementById('patronPhoto').addEventListener('click', ()=> $('patronPhotoInput').click());
+
+/* ---------- Dashboard initializers ---------- */
+function initialSessionCheck(){
+  ensureStorage();
+  initUI();
+  const s = load(KEYS.SESSION, null);
+  if(s) openDashboardWithLoader(s.role);
+  else {
+    // show home
+    $('homeCard').style.display='block';
+    $('dashboards').style.display='none';
+  }
+}
+function initializeMemberDashboard(){
+  const s = load(KEYS.SESSION, null); if(!s) return;
+  const members = load(KEYS.MEMBERS, []);
+  const me = members.find(m=>m.reg.toLowerCase()===s.user.toLowerCase());
+  if(me){ $('memberGreeting').textContent = 'Hi! ' + me.name; $('memberReg').textContent = me.reg; $('memberEmail').textContent = me.email; $('memberPaymentStatus').textContent = 'Status: ' + (me.paymentStatus || 'Not Paid'); }
+  applyPhotosToUI(); renderAllChats(); renderAllTables(); renderAllCharts();
+}
+function initializeAdminDashboard(){
+  $('adminGreeting').textContent = 'Hi! Finance Director';
+  applyPhotosToUI(); renderAllChats(); renderAllTables(); renderAllCharts();
+}
+function initializePatronDashboard(){
+  $('patronGreeting').textContent = 'Hi! Patron';
+  applyPhotosToUI(); renderAllChats(); renderAllTables(); renderAllCharts();
+}
+
+/* ---------- Tables rendering ---------- */
+function renderAllTables(){
+  renderAdminMembersTable();
+  renderAdminPaymentsTable();
+  renderPatronMembersTable();
+  renderPatronQuick();
+}
+function renderAdminMembersTable(){
+  const members = load(KEYS.MEMBERS, []);
+  const table = $('adminMembersTable'); if(!table) return;
+  table.innerHTML = '<tr><th>Photo</th><th>Reg</th><th>Name</th><th>Email</th><th>Payment</th><th>Actions</th></tr>';
+  members.forEach(m=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td style="width:56px"><div style="width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--brown),var(--orange));color:#fff;font-weight:800">${initials(m.name)}</div></td>
+      <td>${escapeHtml(m.reg)}</td>
+      <td>${escapeHtml(m.name)}</td>
+      <td>${escapeHtml(m.email)}</td>
+      <td>${escapeHtml(m.paymentStatus || 'Not Paid')}</td>
+      <td>
+        <button class="btn small" onclick="adminApproveMember('${m.reg}')">Approve</button>
+        <button class="btn small ghost" onclick="adminDeclineMember('${m.reg}')">Decline</button>
+        <button class="btn small warn" onclick="adminRemoveMember('${m.reg}','${encodeURIComponent(m.email)}','${encodeURIComponent(m.name)}')">Remove</button>
+        <button class="btn small ghost" onclick="adminResetPassword('${m.reg}')">Reset PW</button>
+      </td>`;
+    table.appendChild(tr);
+  });
+}
+function renderAdminPaymentsTable(){
+  const payments = load(KEYS.PAYMENTS, []);
+  const table = $('adminPaymentsTable'); if(!table) return;
+  table.innerHTML = '<tr><th>Member</th><th>Type</th><th>Message</th><th>Amount</th><th>Phone</th><th>Receipt</th><th>Time</th><th>Action</th></tr>';
+  payments.filter(p=>p.status==='Pending').forEach(p=>{
+    const img = (p.receipt && p.receipt.name) ? escapeHtml(p.receipt.name) : '';
+    const tr = document.createElement('tr');
+    const parsed = p.parsed || {};
+    tr.innerHTML = `<td>${escapeHtml(p.reg)}</td>
+      <td>${escapeHtml(p.type)}</td>
+      <td title="${escapeHtml(p.message)}" style="max-width:420px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(p.message)}</td>
+      <td>${escapeHtml(parsed.amount||'')}</td>
+      <td>${escapeHtml(parsed.phone||'')}</td>
+      <td>${img ? '<button class="btn small" onclick="viewReceipt(\\''+p.id+'\\')">View</button>' : '<button class="btn small ghost" onclick="openAttachReceipt(\\''+p.id+'\\')">Attach</button>'}</td>
+      <td>${new Date(p.time).toLocaleString()}</td>
+      <td><button class="btn small" onclick="adminApprovePayment('${p.id}')">Approve</button> <button class="btn small ghost" onclick="adminDeclinePayment('${p.id}')">Decline</button></td>`;
+    table.appendChild(tr);
+  });
+}
+function renderPatronMembersTable(){
+  const members = load(KEYS.MEMBERS, []);
+  const table = $('patronMembersTable'); if(!table) return;
+  table.innerHTML = '<tr><th>Photo</th><th>Reg</th><th>Name</th><th>Email</th><th>Payment</th><th>Action</th></tr>';
+  members.forEach(m=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td style="width:56px"><div style="width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--brown),var(--orange));color:#fff;font-weight:800">${initials(m.name)}</div></td>
+      <td>${escapeHtml(m.reg)}</td>
+      <td>${escapeHtml(m.name)}</td>
+      <td>${escapeHtml(m.email)}</td>
+      <td>${escapeHtml(m.paymentStatus || 'Not Paid')}</td>
+      <td><button class="btn small warn" onclick="patronRemoveMember('${m.reg}')">Remove</button></td>`;
+    table.appendChild(tr);
+  });
+}
+function renderPatronQuick(){
+  const members = load(KEYS.MEMBERS, []);
+  const el = $('patronQuick'); if(!el) return;
+  el.innerHTML = '';
+  members.slice().reverse().slice(0,6).forEach(m=>{
+    const d = document.createElement('div'); d.style.padding='8px'; d.style.borderBottom='1px solid rgba(75,46,5,0.03)';
+    d.innerHTML = `<div style="font-weight:700;color:var(--brown-dark)">${escapeHtml(m.name)}</div><div style="font-size:0.86rem;color:#666">${escapeHtml(m.reg)}</div>`;
+    el.appendChild(d);
+  });
+}
+
+/* ---------- Admin actions ---------- */
+function adminAddMember(){
+  const reg = $('adminAddReg').value.trim(), name = $('adminAddName').value.trim(), email = $('adminAddEmail').value.trim(), pass = $('adminAddPass').value;
+  if(!reg||!name||!email||!pass){ alert('Fill all fields'); return; }
+  if(!validEmail(email)){ alert('Invalid email'); return; }
+  if(!strongPassword(pass)){ alert('Weak password'); return; }
+  const members = load(KEYS.MEMBERS, []);
+  if(members.find(m=>m.reg.toLowerCase()===reg.toLowerCase())){ alert('Reg exists'); return; }
+  members.push({ id: uid(), name, reg, email, password: pass, paymentStatus:'Not Paid', createdAt: nowISO() });
+  save(KEYS.MEMBERS, members);
+  renderAllTables(); renderAllCharts(); showToast('Member added');
+  $('adminAddReg').value=''; $('adminAddName').value=''; $('adminAddEmail').value=''; $('adminAddPass').value='';
+}
+function adminApproveMember(reg){
+  const members = load(KEYS.MEMBERS, []);
+  const m = members.find(x=>x.reg.toLowerCase()===reg.toLowerCase());
+  if(m){ m.paymentStatus='Approved'; save(KEYS.MEMBERS,members); renderAllTables(); renderAllCharts(); showToast('Member approved'); }
+}
+function adminDeclineMember(reg){
+  const members = load(KEYS.MEMBERS, []);
+  const m = members.find(x=>x.reg.toLowerCase()===reg.toLowerCase());
+  if(m){ m.paymentStatus='Declined'; save(KEYS.MEMBERS,members); renderAllTables(); renderAllCharts(); showToast('Member declined'); }
+}
+function adminRemoveMember(reg, encodedEmail, encodedName){
+  if(!confirm('Remove member '+reg+'?')) return;
+  const email = decodeURIComponent(encodedEmail || '');
+  const name = decodeURIComponent(encodedName || reg);
+  let members = load(KEYS.MEMBERS, []);
+  members = members.filter(m=>m.reg.toLowerCase()!==reg.toLowerCase());
+  save(KEYS.MEMBERS, members);
+  // remove payments related
+  let payments = load(KEYS.PAYMENTS, []);
+  payments = payments.filter(p=>p.reg.toLowerCase()!==reg.toLowerCase());
+  save(KEYS.PAYMENTS, payments);
+  renderAllTables(); renderAllCharts(); showToast('Member removed and notification prepared');
+  // Prepare mailto link for admin to send immediate notification
+  if(email){
+    const subj = encodeURIComponent('TASSJOOUST Club Membership Update');
+    const body = encodeURIComponent(`Hi ${name},\n\nYou have been removed from the TASSJOOUST CLUB.\nIf you feel you've been removed without reason, please contact the Admin or Patron of this club.\n\nRegards,\nTASSJOOUST CLUB`);
+    const mailto = `mailto:${email}?subject=${subj}&body=${body}`;
+    // open default email client with prefilled message
+    window.location.href = mailto;
+  } else {
+    showToast('No email on file to notify member.'); // fallback
+  }
+}
+function adminResetPassword(reg){
+  if(!confirm('Reset password for '+reg+'?')) return;
+  const members = load(KEYS.MEMBERS, []);
+  const m = members.find(x=>x.reg.toLowerCase()===reg.toLowerCase());
+  if(!m){ alert('Member not found'); return; }
+  const temp = 'tmp' + Math.floor(1000 + Math.random()*9000);
+  m.password = temp; save(KEYS.MEMBERS,members);
+  alert('Temporary password (simulated): ' + temp);
+}
+
+/* ---------- Payments: open modal, submit ---------- */
+let pendingPaymentContext = null;
+function openMpesa(type, amount){
+  const s = load(KEYS.SESSION, null);
+  if(!s || s.role!=='member'){ alert('Sign in as member to pay'); return; }
+  pendingPaymentContext = { type, reg: s.user, amount };
+  $('mpesaModalTitle').textContent = `${type} — Paste your M-Pesa message (to ${DEFAULTS.mpesaNumber})`;
+  $('mpesaMessage').value = '';
+  $('mpesaModalStatus').textContent = '';
+  $('mpesaModal').classList.add('show');
+  $('mpesaModal').setAttribute('aria-hidden','false');
+}
+function closeMpesaModal(){ $('mpesaModal').classList.remove('show'); $('mpesaModal').setAttribute('aria-hidden','true'); pendingPaymentContext=null; }
+function submitMpesa(){
+  const msg = $('mpesaMessage').value.trim();
+  if(!msg){ $('mpesaModalStatus').textContent = 'Please paste the full M-Pesa SMS'; return; }
+  const payments = load(KEYS.PAYMENTS, []);
+  const id = uid();
+  const parsed = aggressiveParseMpesa(msg);
+  payments.push({ id, reg: pendingPaymentContext.reg, type: pendingPaymentContext.type, amount: pendingPaymentContext.amount, message: msg, status:'Pending', time: nowISO(), parsed });
+  save(KEYS.PAYMENTS, payments);
+  // update member status
+  const members = load(KEYS.MEMBERS, []);
+  const m = members.find(x=>x.reg.toLowerCase()===pendingPaymentContext.reg.toLowerCase());
+  if(m){ m.paymentStatus='Pending Approval'; save(KEYS.MEMBERS, members); }
+  closeMpesaModal(); renderAllTables(); renderAllCharts(); showToast('M-Pesa saved — awaiting approval');
+}
+
+/* Admin approve/decline payment */
+function adminApprovePayment(id){
+  let payments = load(KEYS.PAYMENTS, []);
+  const p = payments.find(x=>x.id===id);
+  if(!p) return;
+  p.status = 'Approved';
+  save(KEYS.PAYMENTS, payments);
+  const members = load(KEYS.MEMBERS, []);
+  const m = members.find(x=>x.reg.toLowerCase()===p.reg.toLowerCase());
+  if(m){ m.paymentStatus='Approved'; save(KEYS.MEMBERS, members); }
+  renderAllTables(); renderAllCharts(); showToast('Payment approved');
+}
+function adminDeclinePayment(id){
+  let payments = load(KEYS.PAYMENTS, []);
+  const p = payments.find(x=>x.id===id);
+  if(!p) return;
+  p.status = 'Declined';
+  save(KEYS.PAYMENTS, payments);
+  const members = load(KEYS.MEMBERS, []);
+  const m = members.find(x=>x.reg.toLowerCase()===p.reg.toLowerCase());
+  if(m){ m.paymentStatus='Declined'; save(KEYS.MEMBERS, members); }
+  renderAllTables(); renderAllCharts(); showToast('Payment declined');
+}
+
+/* Attach receipt modal handling */
+let receiptTargetId = null;
+function openAttachReceipt(paymentId){ receiptTargetId = paymentId; $('receiptModal').classList.add('show'); $('receiptModal').setAttribute('aria-hidden','false'); $('receiptStatus').textContent=''; $('receiptUpload').value=''; }
+function closeReceiptModal(){ receiptTargetId = null; $('receiptModal').classList.remove('show'); $('receiptModal').setAttribute('aria-hidden','true'); $('receiptStatus').textContent=''; }
+
+$('receiptAttachBtn').addEventListener('click', function(){
+  const input = $('receiptUpload');
+  const file = input.files && input.files[0];
+  if(!file){ $('receiptStatus').textContent = 'Choose a file first'; return; }
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const payments = load(KEYS.PAYMENTS, []);
+    const p = payments.find(x=>x.id===receiptTargetId);
+    if(!p){ $('receiptStatus').textContent = 'Payment not found'; return; }
+    // store receipt data base64 + name + type
+    p.receipt = { data: ev.target.result, name: file.name, type: file.type };
+    save(KEYS.PAYMENTS, payments);
+    $('receiptStatus').textContent = 'Receipt attached';
+    renderAllTables();
+    setTimeout(()=> closeReceiptModal(), 800);
+  };
+  reader.readAsDataURL(file);
+});
+
+/* Viewing receipt */
+function viewReceipt(paymentId){
+  const payments = load(KEYS.PAYMENTS, []);
+  const p = payments.find(x=>x.id===paymentId);
+  if(!p || !p.receipt){ alert('No receipt attached'); return; }
+  // open new window with the attachment displayed
+  const w = window.open('', '_blank');
+  if(p.receipt.type === 'application/pdf'){
+    w.document.write(`<iframe src="${p.receipt.data}" style="width:100%;height:100vh;border:none"></iframe>`);
+  } else {
+    w.document.write(`<img src="${p.receipt.data}" style="max-width:100%;display:block;margin:0 auto"/>`);
+  }
+}
+
+/* Export CSV */
+function exportCSV(){
+  const members = load(KEYS.MEMBERS, []);
+  if(!members.length){ alert('No members'); return; }
+  const headers = ['Reg','Name','Email','Phone','Department','Year','PaymentStatus','CreatedAt'];
+  const rows = members.map(m=>[m.reg,m.name,m.email,m.phone,m.department,m.year,m.paymentStatus||'',m.createdAt||'']);
+  let csv = headers.join(',') + '\n' + rows.map(r=>r.map(c=>`"${String(c||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'tassjooust_members.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('CSV exported');
+}
+
+/* Export styled PDF (open print window) */
+function exportPDF(){
+  const members = load(KEYS.MEMBERS, []);
+  const payments = load(KEYS.PAYMENTS, []);
+  const logo = load(KEYS.PHOTOS, {})['logo'] || $('homeLogo').src;
+  const now = new Date();
+  const dateStr = now.toLocaleString();
+  // produce HTML
+  let rows = members.map(m=>{
+    const approvedDate = ''; // could inspect payments for approval time, but keep blank or use createdAt
+    const receipt = payments.find(p=>p.reg.toLowerCase()===m.reg.toLowerCase() && p.status==='Approved' && p.receipt) || null;
+    return `<tr style="background:${'#fff'}"><td style="padding:8px;border:1px solid #ddd">${escapeHtml(m.name)}</td><td style="padding:8px;border:1px solid #ddd">${escapeHtml(m.phone||'')}</td><td style="padding:8px;border:1px solid #ddd">${escapeHtml(m.year||'')}</td><td style="padding:8px;border:1px solid #ddd">${escapeHtml(m.paymentStatus||'')}</td><td style="padding:8px;border:1px solid #ddd">${approvedDate}</td><td style="padding:8px;border:1px solid #ddd">${receipt?escapeHtml(receipt.receipt.name):''}</td></tr>`;
+  }).join('');
+  const html = `
+  <html>
+  <head>
+    <title>TASSJOOUST Members Report</title>
+    <style>
+      body{font-family:Arial,Helvetica,sans-serif;margin:20px;color:#222}
+      .header{display:flex;align-items:center;justify-content:space-between}
+      .logo{width:100px}
+      h1{text-align:center}
+      table{width:100%;border-collapse:collapse;margin-top:16px}
+      th,td{padding:8px;border:1px solid #ddd;text-align:left}
+      thead th{background:linear-gradient(90deg, #F28C28, #ffb85b);color:#fff}
+      tfoot{margin-top:18px;font-style:italic;color:#666}
+      .footerbar{position:fixed;bottom:20px;left:20px;right:20px;text-align:center;color:#874200;font-weight:700}
+    </style>
+  </head>
+  <body>
+    <div class="header"><div><img src="${logo}" class="logo"></div><div style="text-align:right">Generated: ${dateStr}</div></div>
+    <h1>TASSJOOUST Club Members Report</h1>
+    <table><thead><tr><th>Name</th><th>Phone</th><th>Year</th><th>Payment Status</th><th>Approved</th><th>Receipt</th></tr></thead><tbody>${rows}</tbody></table>
+    <div class="footerbar">&ldquo;Risk it and be an Actuary&rdquo; — Generated by TASSJOOUST Club System © 2025</div>
+  </body></html>`;
+  const w = window.open('', '_blank');
+  w.document.write(html);
+  w.document.close();
+  // auto print (user can cancel or choose Save as PDF)
+  setTimeout(()=>{ w.print(); }, 500);
+}
+
+/* ---------- Name matching parser (aggressive) ---------- */
+function normalizeName(s){ return String(s||'').toLowerCase().replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim(); }
+function tokens(s){ return normalizeName(s).split(' ').filter(Boolean); }
+function levenshtein(a,b){
+  if(a===b) return 0;
+  const m=a.length, n=b.length; if(m===0) return n; if(n===0) return m;
+  const dp = Array.from({length:m+1}, ()=> new Array(n+1));
+  for(let i=0;i<=m;i++) dp[i][0]=i;
+  for(let j=0;j<=n;j++) dp[0][j]=j;
+  for(let i=1;i<=m;i++){
+    for(let j=1;j<=n;j++){
+      const cost = a[i-1]===b[j-1]?0:1;
+      dp[i][j]=Math.min(dp[i-1][j]+1, dp[i][j-1]+1, dp[i-1][j-1]+cost);
+    }
+  }
+  return dp[m][n];
+}
+function similarityFromLev(a,b){
+  if(!a||!b) return 0;
+  const dist = levenshtein(a,b);
+  const maxLen = Math.max(a.length,b.length);
+  if(maxLen===0) return 1;
+  return 1 - (dist / maxLen);
+}
+function aggressiveNameScore(nameA, nameB){
+  const ta = tokens(nameA); const tb = tokens(nameB);
+  if(!ta.length || !tb.length) return 0;
+  let overlap = 0;
+  ta.forEach(a=>{
+    tb.forEach(b=>{
+      if(a===b) overlap += 1.2;
+      else if(b.startsWith(a) || a.startsWith(b)) overlap += 0.9;
+      else if(b.includes(a) || a.includes(b)) overlap += 0.6;
+    });
+  });
+  const tokenScore = overlap / Math.max(ta.length, tb.length);
+  let bestSim = 0;
+  ta.forEach(a=>{
+    tb.forEach(b=>{
+      const sim = similarityFromLev(a,b);
+      if(sim>bestSim) bestSim=sim;
+    });
+  });
+  const nA = normalizeName(nameA), nB = normalizeName(nameB);
+  const substrScore = (nB.includes(nA) || nA.includes(nB)) ? 1 : 0;
+  const score = Math.min(1, (tokenScore*0.45) + (bestSim*0.4) + (substrScore*0.15));
+  return score;
+}
+function aggressiveParseMpesa(text){
+  const out = { raw:text, amount:null, phone:null, date:null, name:null, matched:false, matchedReg:null, score:0 };
+  if(!text) return out;
+  const t=text;
+  const amountMatch = t.match(/(?:Ksh|KES|KSh|\bsh\b|shillings)\s*([0-9,\.]+)/i) || t.match(/([0-9]{1,3}(?:[,\s][0-9]{3})*(?:\.[0-9]{1,2})?)\s*(?:Ksh|KES|sh|shillings)?/i);
+  if(amountMatch) out.amount = String(amountMatch[1]).replace(/\s|,/g,'');
+  let p = t.match(/(\+?2547\d{8})/) || t.match(/(07\d{8})/);
+  if(p) out.phone = p[1];
+  let d = t.match(/(\d{1,2}\/\d{1,2}\/\d{2,4})/) || t.match(/(\d{1,2}-\d{1,2}-\d{2,4})/) || t.match(/(\d{4}-\d{1,2}-\d{1,2})/);
+  if(d) out.date=d[1];
+  let n = t.match(/(?:from|sent by|sender|by)\s+([A-Z][A-Za-z' ]{2,40})/i) || t.match(/([A-Z][A-Za-z' ]{2,40})\s+confirmed/i) || t.match(/received from\s+([A-Za-z' ]{2,40})/i);
+  if(n) out.name = n[1].trim();
+  if(!out.name){
+    const caps = t.match(/\b([A-Z][a-z]{2,})\s+([A-Z][a-z]{2,})\b/);
+    if(caps) out.name = caps[0];
+  }
+  const members = load(KEYS.MEMBERS, []);
+  let best = {score:0, reg:null};
+  if(out.phone){
+    let norm = out.phone.replace(/\s+/g,'');
+    if(norm.startsWith('07') && norm.length===10) norm = '+254' + norm.slice(1);
+    members.forEach(m=>{
+      if(m.phone){
+        const mp = String(m.phone).replace(/\s+/g,'');
+        if(mp.endsWith(norm) || norm.endsWith(mp)) { best = {score:1, reg:m.reg}; }
+      }
+    });
+  }
+  if(best.score < 0.99 && out.name){
+    members.forEach(m=>{
+      const s = aggressiveNameScore(out.name, m.name);
+      if(s > best.score){ best = {score:s, reg:m.reg}; }
+    });
+  }
+  if(best.score < 0.55 && out.name){
+    members.forEach(m=>{
+      const s2 = aggressiveNameScore(out.name + ' ' + (out.phone||''), m.name);
+      if(s2 > best.score) best = {score:s2, reg:m.reg};
+    });
+  }
+  out.matched = best.score >= 0.55; out.matchedReg = out.matched ? best.reg : null; out.score = best.score;
+  return out;
+}
+
+/* Parse UI */
+function parseMpesaMessage(){
+  const raw = $('mpesaRaw').value.trim(); if(!raw){ showToast('Paste an M-Pesa message'); return; }
+  const parsed = aggressiveParseMpesa(raw);
+  const cont = $('mpesaParseResult'); cont.innerHTML = `<div style="display:flex;gap:12px;align-items:center">
+    <div style="flex:1"><div style="font-weight:700">Parsed data</div><div style="margin-top:6px"><strong>Amount:</strong> ${parsed.amount||'<em>not found</em>'}</div><div><strong>Phone:</strong> ${parsed.phone||'<em>not found</em>'}</div><div><strong>Name:</strong> ${parsed.name||'<em>not found</em>'}</div><div><strong>Date:</strong> ${parsed.date||'<em>not found</em>'}</div><div style="margin-top:6px"><strong>Match:</strong> ${parsed.matched?('✅ '+parsed.matchedReg+' (score:'+parsed.score.toFixed(2)+')'):(parsed.score?('⚠️ score:'+parsed.score.toFixed(2)):'No')}</div></div>
+    <div style="display:flex;flex-direction:column;gap:8px"><button class="btn" id="saveParsed">Save as payment</button><button class="btn ghost" onclick="clearMpesaParser()">Clear</button></div>
+  </div>`;
+  $('saveParsed').addEventListener('click', ()=> saveParsedPayment(raw, parsed));
+}
+function saveParsedPayment(raw, parsed){
+  const targetReg = parsed.matchedReg || prompt('No matching member detected. Enter registration number to attach payment to (or Cancel):');
+  if(!targetReg){ showToast('No reg provided; parse not saved'); return; }
+  const payments = load(KEYS.PAYMENTS, []);
+  payments.push({ id: uid(), reg: targetReg, type: 'Registration', amount: parsed.amount||'', message: raw, status:'Pending', time: nowISO(), parsed });
+  save(KEYS.PAYMENTS, payments);
+  if(parsed.matched){
+    const members = load(KEYS.MEMBERS, []); const m = members.find(x=>x.reg.toLowerCase()===parsed.matchedReg.toLowerCase()); if(m){ m.paymentStatus='Pending Approval'; save(KEYS.MEMBERS, members); }
+  }
+  renderAllTables(); renderAllCharts(); showToast('Parsed payment saved (pending approval)'); clearMpesaParser();
+}
+function clearMpesaParser(){ $('mpesaRaw').value=''; $('mpesaParseResult').innerHTML=''; }
+
+/* ---------- Charts (animated) ---------- */
+function drawBarChart(canvasId){
+  const canvas = $(canvasId); if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const DPR = window.devicePixelRatio || 1; const W = canvas.clientWidth; const H = canvas.clientHeight;
+  canvas.width = W*DPR; canvas.height = H*DPR; ctx.setTransform(DPR,0,0,DPR,0,0);
+  ctx.clearRect(0,0,W,H);
+  const members = load(KEYS.MEMBERS, []);
+  const counts = { Approved:0, Pending:0, Declined:0, 'Not Paid':0 };
+  members.forEach(m=>{ const s = m.paymentStatus || 'Not Paid'; if(s === 'Pending' || s === 'Pending Approval') counts.Pending++; else if(counts[s]!==undefined) counts[s]++; else counts['Not Paid']++; });
+  const labels = ['Approved','Pending','Declined','Not Paid'];
+  const data = [counts.Approved, counts.Pending, counts.Declined, counts['Not Paid']];
+  const colors = ['#F28C28','#FFB86F','#D98A2F','#E9DCCC'];
+  const maxV = Math.max(1, ...data); const padding = 24; const barWidth = (W-padding*2)/labels.length*0.6; const gap = ((W-padding*2)-(barWidth*labels.length))/(labels.length-1); const baseY = H-36;
+  let start = null;
+  function step(ts){
+    if(!start) start = ts; const t = Math.min(1,(ts-start)/700);
+    ctx.clearRect(0,0,W,H);
+    for(let i=0;i<labels.length;i++){
+      const x = padding + i*(barWidth+gap) + barWidth/2;
+      const targetH = (data[i]/maxV)*(H-80); const h = targetH*t;
+      ctx.fillStyle = 'rgba(0,0,0,0.06)'; ctx.fillRect(x-barWidth/2, baseY-targetH, barWidth, targetH);
+      ctx.fillStyle = colors[i]; ctx.fillRect(x-barWidth/2, baseY-h, barWidth, h);
+      ctx.fillStyle = '#222'; ctx.font = '700 12px system-ui'; ctx.textAlign = 'center'; ctx.fillText(String(data[i]), x, baseY-h-8);
+      ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.font = '600 12px system-ui'; ctx.fillText(labels[i], x, baseY+18);
+    }
+    ctx.fillStyle = 'var(--brown-dark)'; ctx.font = '700 14px system-ui'; ctx.textAlign = 'center'; ctx.fillText('Members by status', W/2, 18);
+    if(t<1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+function renderAllCharts(){ drawBarChart('memberChart'); drawBarChart('adminChart'); drawBarChart('patronChart'); }
+
+/* ---------- Chat handling ---------- */
+function sendChat(role){
+  const inputId = role==='admin' ? 'chatAdminIn' : (role==='patron' ? 'chatPatronIn' : 'chatMemberIn');
+  const el = $(inputId); if(!el) return; const text = el.value.trim(); if(!text) return;
+  const s = load(KEYS.SESSION, null); if(!s) return alert('Sign in to chat');
+  const members = load(KEYS.MEMBERS, []);
+  let name = s.role==='member' ? (members.find(m=>m.reg.toLowerCase()===s.user.toLowerCase())?.name || s.user) : (s.role==='admin' ? 'Finance Director' : 'Patron');
+  const chat = load(KEYS.CHAT, []); chat.push({ id: uid(), user: name, role: s.role, text, time: nowTime() });
+  save(KEYS.CHAT, chat); el.value = ''; renderAllChats();
+}
+function renderAllChats(){
+  renderChatBox('chatMemberBox'); renderChatBox('chatAdminBox'); renderChatBox('chatPatronBox');
+}
+function renderChatBox(id){
+  const box = $(id); if(!box) return; box.innerHTML = '';
+  const chat = load(KEYS.CHAT, []);
+  chat.forEach(m=>{
+    const d = document.createElement('div');
+    const cls = m.role==='member' ? 'me' : (m.role==='admin' ? 'admin' : 'patron');
+    d.className = 'bubble ' + cls;
+    d.innerHTML = `<strong>${escapeHtml(m.user)}</strong> <span style="opacity:0.8;font-size:0.85rem">[${m.time}]</span><div style="margin-top:6px">${escapeHtml(m.text)}</div>`;
+    box.appendChild(d);
+  });
+  box.scrollTop = box.scrollHeight;
+}
+setInterval(renderAllChats, 2000);
+
+/* ---------- Typing indicators (others only) ---------- */
+function typing(role){
+  const s = load(KEYS.SESSION, null);
+  const members = load(KEYS.MEMBERS, []);
+  let name = s && s.role==='member' ? (members.find(m=>m.reg.toLowerCase()===s.user.toLowerCase())?.name || s.user) : (s && s.role==='admin' ? 'Finance Director' : 'Patron');
+  const T = load(KEYS.TYPING, {});
+  T[role] = { name, until: Date.now()+3000, ts: Date.now() };
+  save(KEYS.TYPING, T);
+}
+function renderTypingIndicators(){
+  const T = load(KEYS.TYPING, {});
+  const s = load(KEYS.SESSION, null);
+  const now = Date.now();
+  let changed = false;
+  for(const k in T){ if(T[k].until < now){ delete T[k]; changed = true; } }
+  if(changed) save(KEYS.TYPING, T);
+  setTypingEl('typingMember','member',s,T);
+  setTypingEl('typingAdmin','admin',s,T);
+  setTypingEl('typingPatron','patron',s,T);
+}
+function setTypingEl(elId,role,s,T){
+  const el = $(elId); if(!el) return;
+  if(T[role] && (!s || s.role !== role)){ el.textContent = `${T[role].name} is typing...`; el.style.display = 'block'; el.setAttribute('aria-hidden','false'); } else { el.textContent=''; el.style.display = 'none'; el.setAttribute('aria-hidden','true'); }
+}
+setInterval(renderTypingIndicators, 800);
+
+/* ---------- Change password ---------- */
+function openChangePassword(){ $('pwModal').classList.add('show'); $('pwModal').setAttribute('aria-hidden','false'); }
+function closePwModal(){ $('pwModal').classList.remove('show'); $('pwModal').setAttribute('aria-hidden','true'); $('pwModalStatus').textContent=''; $('oldPassword').value=''; $('newPassword').value=''; }
+function confirmChangePassword(){
+  const oldp = $('oldPassword').value, newp = $('newPassword').value; const s = load(KEYS.SESSION, null);
+  if(!s || s.role!=='member') return alert('Sign in as member'); const members = load(KEYS.MEMBERS, []); const m = members.find(x=>x.reg.toLowerCase()===s.user.toLowerCase()); if(!m) return alert('User not found');
+  if(m.password !== oldp){ $('pwModalStatus').textContent = 'Incorrect previous password'; return; }
+  if(!strongPassword(newp)){ $('pwModalStatus').textContent = 'New password weak.'; return; }
+  m.password = newp; save(KEYS.MEMBERS,members); closePwModal(); alert('You have successfully changed your password');
+}
+
+/* ---------- Admin Payments: attach receipts helpers used earlier ---------- */
+function openAttachReceiptFor(pId){
+  openAttachReceipt(pId); // alias kept
+}
+
+/* ---------- Export/Reset actions ---------- */
+function adminResetSystem(){
+  if(!confirm('This will clear members, payments, chat and photos (except logo). Proceed?')) return;
+  const photos = load(KEYS.PHOTOS, {});
+  const logo = photos.logo || $('homeLogo').src;
+  localStorage.removeItem(KEYS.MEMBERS); localStorage.removeItem(KEYS.PAYMENTS); localStorage.removeItem(KEYS.CHAT); localStorage.removeItem(KEYS.TYPING); localStorage.removeItem(KEYS.SESSION);
+  save(KEYS.PHOTOS, { logo }); save(KEYS.MEMBERS, []); save(KEYS.PAYMENTS, []); save(KEYS.CHAT, []); save(KEYS.TYPING, {});
+  showToast('System reset'); setTimeout(()=> location.reload(), 600);
+}
+
+/* ---------- Small helpers ---------- */
+function initials(name){ if(!name) return 'TJ'; return name.split(' ').filter(Boolean).slice(0,2).map(n=>n[0].toUpperCase()).join('').slice(0,2); }
+function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* ---------- Admin parser + payments navigation ---------- */
+function switchAdminTab(tab){
+  $('adminTabMembers').style.display = (tab==='members' ? 'block' : 'none');
+  $('adminTabPayments').style.display = (tab==='payments' ? 'block' : 'none');
+  $('adminTabParser').style.display = (tab==='parser' ? 'block' : 'none');
+}
+
+/* ---------- Quick helpers for home UI ---------- */
+function switchTo(x){ if(x==='signUp') setAuthTab('signup'); else setAuthTab('signin'); window.scrollTo({top:0,behavior:'smooth'}); }
+function goHome(){ window.location.href = '#'; location.reload(); }
+
+/* ---------- Render recent members removed (user asked to remove recent members tab)  ----------
+   We removed the recent members tab from home page as requested earlier.
+   Instead, admin/patron sees members inside dashboards.
+*/
+
+/* ---------- Utility to render tables + charts on demand ---------- */
+function renderAllTablesAndUI(){
+  renderAllTables();
+  renderAllCharts();
+  applyPhotosToUI();
+}
+
+/* make buttons and wiring after DOM ready */
+document.addEventListener('DOMContentLoaded', ()=>{
+  ensureStorage();
+  // attach click listeners for created UI nodes
+  $('navAdmin').addEventListener('click', ()=> adminSignIn());
+  $('navPatron').addEventListener('click', ()=> patronSignIn());
+  $('navMember').addEventListener('click', ()=> setAuthTab('signin'));
+  $('tabSignUp').addEventListener('click', ()=> setAuthTab('signup'));
+  $('tabSignIn').addEventListener('click', ()=> setAuthTab('signin'));
+
+  // attach gallery modal controls
+  $('galleryCloseBtn').addEventListener('click', ()=> { $('galleryModal').classList.remove('show'); });
+  $('gallerySetBtn').addEventListener('click', ()=> { /* not used here; gallery code available earlier */ });
+
+  // attach receipt modal close on overlay click
+  document.querySelectorAll('.modal').forEach(m => { m.addEventListener('click', (e)=>{ if(e.target===m) m.classList.remove('show'); }); });
+});
+
+/* Expose some global functions used in inline handlers */
+window.memberSignUp = memberSignUp;
+window.memberSignIn = memberSignIn;
+window.adminSignIn = adminSignIn;
+window.patronSignIn = patronSignIn;
+window.memberForgot = memberForgot;
+window.openMpesa = openMpesa;
+window.closeMpesaModal = closeMpesaModal;
+window.submitMpesa = submitMpesa;
+window.adminAddMember = adminAddMember;
+window.adminApproveMember = adminApproveMember;
+window.adminDeclineMember = adminDeclineMember;
+window.adminRemoveMember = adminRemoveMember;
+window.adminResetPassword = adminResetPassword;
+window.adminApprovePayment = adminApprovePayment;
+window.adminDeclinePayment = adminDeclinePayment;
+window.exportCSV = exportCSV;
+window.exportPDF = exportPDF;
+window.openAttachReceipt = openAttachReceipt;
+window.viewReceipt = viewReceipt;
+window.openChangePassword = openChangePassword;
+window.confirmChangePassword = confirmChangePassword;
+window.closePwModal = closePwModal;
+window.sendChat = sendChat;
+window.typing = typing;
+window.switchAdminTab = switchAdminTab;
+window.patronRemoveMember = function(reg){ if(!confirm('Remove member '+reg+'?')) return; let members = load(KEYS.MEMBERS,[]); members = members.filter(m=>m.reg.toLowerCase()!==reg.toLowerCase()); save(KEYS.MEMBERS,members); renderAllTables(); renderAllCharts(); showToast('Member removed by patron'); };
+
+initUI();
+
+/* show home tagline only after small delay for nice fade-in */
+function fadeHomeTagline(){ const el = $('homeTag'); if(!el) return; setTimeout(()=>{ el.style.opacity = 1; el.style.transform = 'translateY(0)'; }, 600); }
+
+/* detect bottom scroll for footer tagline */
+window.addEventListener('scroll', ()=> {
+  const atBottom = (window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 10);
+  const el = $('footerTag');
+  if(atBottom) el.classList.add('show'); else el.classList.remove('show');
+});
+
+/* convenience: render initial tables and charts periodically */
+setInterval(()=>{ try{ renderAllTables(); renderAllCharts(); }catch(e){} }, 2000);
+
+</script>
+</body>
+</html>
